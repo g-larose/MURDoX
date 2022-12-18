@@ -1,0 +1,15 @@
+{
+  "facts": [
+    "The name of the C Sharp language is stimulated by the musical notation. Here sharp, represent the written note which should be made a semitone higher in pitch.",
+    "Microsoft first time uses the name C# in 1988.",
+    "The syntax of C# language is similar to the C-style family such as Java, C, C++.",
+    "C# language is suitable for writing applications for embedded systems.",
+    "C# language is good for developing games. It is also used by Unity(the majority leader in commercial game engines) to develop games.",
+    "C# language contains the highest class that supports Generics and Templates.",
+    "C# supports internationalization.",
+    "C# language is used to developing web pages, android applications, etc.",
+    "C# and XAML are the main languages used to develop Windows Store Apps.",
+    "C# language has native garbage-collection."
+
+  ]
+}
