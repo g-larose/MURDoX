@@ -15,9 +15,10 @@ namespace MURDoX.Core.Commands.Polls
 {
     public class PollCommands : ApplicationCommandModule
     {
+
         #region POLL
 
-        [SlashCommand("poll", "Creates a Poll Slash command")]
+        [SlashCommand("vote", "Creates a Poll Slash command")]
         public async Task Poll(InteractionContext ctx, 
             [Option("subject", "question the poll ask's the members")] string subject, 
             [Option("duration", "duration to run the poll")] string duration)
@@ -27,18 +28,29 @@ namespace MURDoX.Core.Commands.Polls
             fields[0] = new EmbedField() { Name = "Subject", Value = subject, Inline = true };
             fields[1] = new EmbedField() { Name = "Duration", Value = $"{duration}(seconds)", Inline = true };
 
-            var embed = new Embed()
+            var embed = new Embed();
+            try
             {
-                Author = ctx.User.Username,
-                Desc = $"new poll, this poll will last {duration}(seconds) , react to vote.",
-                Fields = fields,
-                Footer = $"MURDoX {DateTimeOffset.Now.UtcDateTime}"
-            };
+                embed = new Embed()
+                {
+                    Author = ctx.User.Username,
+                    Desc = $"new poll, this poll will last {duration}(seconds) , react to vote.",
+                    Fields = fields,
+                    Color = await ShuffleHelper.GetRandomEmbedColorAsync(),
+                    Footer = $"MURDoX {DateTimeOffset.Now.UtcDateTime}"
+                };
+            }
+            catch (Exception ex)
+            {
+                var m = ex.Message;
+            }
             
-            var interactivity = ctx.Client.GetInteractivity();
+            
             var msg =  await ctx.Channel.SendMessageAsync(embed: embedBuilder.Build(embed));
             var emojiOptions = new string[] { ":thumbsup:", ":thumbsdown:" };
-            
+            var interactivity = ctx.Client.GetInteractivity();
+            await msg.ModifyAsync("Calculationg...");
+
             foreach (var emoji in emojiOptions)
             {
                 await msg.CreateReactionAsync(DiscordEmoji.FromName(ctx.Client, emoji));
@@ -73,9 +85,12 @@ namespace MURDoX.Core.Commands.Polls
             {
                 Desc = $"voting results for\r\n``{subject}``",
                 Fields =  resultFields,
+                Color = await ShuffleHelper.GetRandomEmbedColorAsync(),
+                TimeStamp= DateTime.Now,
+                Footer = $"MURDoX"
             };
 
-            await msg.ModifyAsync(x => x.WithEmbed(embed: embedBuilder.Build(modifiedEmbed))); 
+            await msg.ModifyAsync(x => x.WithEmbed(embed: embedBuilder.Build(modifiedEmbed)));
 
         }
 

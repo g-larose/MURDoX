@@ -17,7 +17,7 @@ namespace MURDoX.Core.Commands.Games.Dice
 
         [Command("dice")]
         [Description("rolls a set of dice")]
-        public async Task RollDice(CommandContext ctx, [RemainingText] string args)
+        public async Task RollDice(CommandContext ctx, [RemainingText] string args = "6 6")
         {
             var commandArgs = args.Split(' '); //format !dice [dice] [sides]  example: !dice 2 6
             var bot = ctx.Client.CurrentUser;
@@ -25,7 +25,7 @@ namespace MURDoX.Core.Commands.Games.Dice
 
             if (commandArgs.Length > 2 || commandArgs.Length < 2)
             {
-                await ctx.Channel.SendMessageAsync("invalid arguments, please try again!");
+                await ctx.Channel.SendMessageAsync("``invalid arguments, please try again!``");
             }
             else
             {
@@ -34,7 +34,7 @@ namespace MURDoX.Core.Commands.Games.Dice
                     if (int.TryParse(commandArgs[1], out int sides))
                     {
                         //check to see if the numDice and sides are legal numbers
-                        if (numDice < 7 && numDice > 0 && sides < 17 && sides > 0 )
+                        if (numDice < 7 && numDice > 0 && sides < 13 && sides > 0 )
                         {
                             //commandArgs are good
                             //create embed to send to chat with the MakeRoll results.
@@ -53,7 +53,7 @@ namespace MURDoX.Core.Commands.Games.Dice
                             var scoreField = new EmbedField() { Name = "Score", Value = score.ToString(), Inline = true };
 
                             var fields = new EmbedField[] { dieField, numField, scoreField };
-
+                            
                             var embed = new Embed()
                             {
                                 Author = messageAuthor.Username,

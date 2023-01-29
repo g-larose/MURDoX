@@ -22,7 +22,7 @@ namespace MURDoX.Core.Commands.Facts
         {
             if (args != null || args != "")
             {
-                
+               
                 switch (args)
                 {
                     case "start":
@@ -31,18 +31,47 @@ namespace MURDoX.Core.Commands.Facts
                         _timer.Interval = 1000;
                         _timer.Start();
                         _timer.Elapsed += _timer_Elapsed;
+                        var fact = await FactHelper.GetRandomFact();
+                        var fields = new EmbedField[2];
+                        fields[0] = new EmbedField { Name = "Started", Value = ctx.Message.Author.Username, Inline = true };
+                        fields[1] = new EmbedField { Name = "Interval", Value = "24 hour", Inline = true };
                         var embed = new Embed()
                         {
                             Author = "Facts will begin shortly",
+                            Fields = fields,
                             Color = await ShuffleHelper.GetRandomEmbedColorAsync(),
                             TimeStamp = null,
                         };
-
+                        
                         var embedBuilder = new EmbedBuilderHelper();
-                        await ctx.Channel.SendMessageAsync(embed: embedBuilder.Build(embed));
+                        var mes = await ctx.Channel.SendMessageAsync(embed: embedBuilder.Build(embed));
+                        await Task.Delay(25000);
+
+                        var bot = _ctx.Client.CurrentUser;
+                        var factFields = new EmbedField[2];
+                        factFields[0] = new EmbedField { Name = "Category", Value = $"``{fact.Category!.ToUpper()}``", Inline = true };
+                        factFields[1] = new EmbedField { Name = "Link", Value = fact.Link, Inline = true };
+                        var factEmbed = new Embed()
+                        {
+                            Title = $"Fact: ``{fact.Category!.ToUpper()}``",
+                            Author = $"{bot.Username} ",
+                            Desc = $"{fact.Content!}",
+                            Footer = $"{bot.Username} ©️",
+                            AuthorAvatar = bot.AvatarUrl,
+                            Fields = factFields,
+                            LinkUrl = "",
+                            ThumbnailImgUrl = null,
+                            TimeStamp = DateTimeOffset.Now,
+                            FooterImgUrl = bot.AvatarUrl,
+                            Color = await ShuffleHelper.GetRandomEmbedColorAsync(),
+                        };
+                        await mes.ModifyAsync(embed: embedBuilder.Build(factEmbed));
+                        //await _ctx.Channel.SendMessageAsync(embed: embedBuilder.Build(factEmbed));
+                       
                         break;
                     case "stop":
                         _timer.Stop();
+                        _timer.Elapsed -= _timer_Elapsed;
                         var messageAuthor = ctx.Message.Author;
                         embed = new Embed()
                         {
@@ -66,20 +95,25 @@ namespace MURDoX.Core.Commands.Facts
             var milliseconds = seconds * 1000;
             var hours = MillisecondConverter.ConvertMillisecondsToHours(milliseconds);
 
-            if (milliseconds >= 60000)
+            if (hours >= 24)
             {
                 Task.Run(async () =>
                {
                    var bot = _ctx.Client.CurrentUser;
                    var fact = await FactHelper.GetRandomFact();
+                   
                    var embedBuilder = new EmbedBuilderHelper();
+                   var fields = new EmbedField[2];
+                   fields[0] = new EmbedField { Name = "Category", Value = $"``{fact.Category!.ToUpper()}``", Inline = true };
+                   fields[1] = new EmbedField { Name = "Link", Value = fact.Link, Inline = true };
                    var embed = new Embed()
                    {
-                       Title = "Fact",
+                       Title = $"Fact: ``{fact.Category!.ToUpper()}``",
                        Author = $"{bot.Username} ",
-                       Desc = $"{fact}",
-                       Footer = $"{bot.Username}©️",
+                       Desc = $"{fact.Content!}",
+                       Footer = $"{bot.Username} ©️",
                        AuthorAvatar = bot.AvatarUrl,
+                       Fields = fields,
                        LinkUrl = "",
                        ThumbnailImgUrl = null,
                        TimeStamp = DateTimeOffset.Now,
@@ -88,6 +122,7 @@ namespace MURDoX.Core.Commands.Facts
                    };
                    await _ctx.Channel.SendMessageAsync(embedBuilder.Build(embed));
                    seconds = 0;
+                   hours = 0;
                });
             }
            

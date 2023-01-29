@@ -11,4 +11,5 @@
 * [ ] **Banking system**
 * [ ] **XP System**
 * [ ] **Tag System**
+* [ ] **Suggestions**
 

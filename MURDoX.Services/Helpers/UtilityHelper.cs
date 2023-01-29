@@ -1,4 +1,6 @@
-﻿using MURDoX.Data.Factories;
+﻿using Microsoft.Extensions.Logging;
+using MURDoX.Data.Factories;
+using MURDoX.Services.Interfaces;
 using MURDoX.Services.Models;
 using System;
 using System.Collections.Generic;
@@ -12,10 +14,12 @@ namespace MURDoX.Services.Helpers
     public class UtilityHelper
     {
         private readonly AppDbContextFactory _dbFactory;
+        private readonly ILoggerService _logger;
 
-        public UtilityHelper(AppDbContextFactory dbFactory)
+        public UtilityHelper(AppDbContextFactory dbFactory, ILoggerService logger)
         {
             _dbFactory = dbFactory ?? throw new ArgumentNullException(nameof(dbFactory));
+            _logger = logger ?? throw new ArgumentNullException(nameof(logger));
         }
 
         #region GENERATE RANDOM NUMBERS
@@ -87,6 +91,7 @@ namespace MURDoX.Services.Helpers
             var db = _dbFactory.CreateDbContext();
             await db.AddAsync(member);
             await db.SaveChangesAsync();
+            Console.WriteLine($"[INFO]  Server Member {member.Username} Created [{DateTimeOffset.UtcNow}]");
             
         }
         #endregion
@@ -101,6 +106,16 @@ namespace MURDoX.Services.Helpers
             return (int)sw.ElapsedMilliseconds;
         }
 
+        #endregion
+
+        #region SAVE SUGGESTION
+        public static void SaveSuggestionToDb(Suggestion suggestion) 
+        {
+            var dbFactory = new AppDbContextFactory();
+            var db = dbFactory.CreateDbContext();
+            db.Suggestions!.Add(suggestion);
+            db.SaveChanges();
+        }
         #endregion
     }
 }

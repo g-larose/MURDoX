@@ -9,9 +9,9 @@ namespace MURDoX.Services.Models
     public enum Rank
     {
 
-        NEWB,
-        MEMBER,
-        REGULAR,
+        NEWB ,
+        MEMBER ,
+        REGULAR ,
         ASSOCIATE,
         MASTER
 

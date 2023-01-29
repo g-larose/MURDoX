@@ -6,12 +6,17 @@ using DSharpPlus.Interactivity;
 using DSharpPlus.Interactivity.Enums;
 using DSharpPlus.Interactivity.Extensions;
 using DSharpPlus.SlashCommands;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Storage;
 using Microsoft.Extensions.DependencyInjection;
+using MURDoX.Data;
 using MURDoX.Data.Factories;
 using MURDoX.Services.Helpers;
 using MURDoX.Services.Interfaces;
 using MURDoX.Services.Models;
 using MURDoX.Services.Services;
+using System.Drawing;
+using System.Globalization;
 using System.Linq;
 using System.Reflection;
 
@@ -27,10 +32,17 @@ namespace MURDoX.Core
         private ILoggerService _logger { get; set; }
         private List<Log> chatLogs { get; set; }
 
+        private Queue<string> messageQue = new Queue<string>();
+        private Dictionary<ulong, int> xpList = new Dictionary<ulong, int>();
+
+        private List<(ulong, string)> guildIdList = new List<ValueTuple<ulong, string>>();
         public Bot()
         {
             _logger = new LoggerService();
             chatLogs = new List<Log>();
+           // guildIdList.Add(new ValueTuple<ulong, string>(795412870438453318, "Suncoast Software Community"));
+           // guildIdList.Add(new ValueTuple<ulong, string>(764184337620140062, "Bot Playground"));
+            guildIdList.Add(new ValueTuple<ulong, string>(995636157595521054, "DroppsDev"));
         }
 
 
@@ -72,6 +84,7 @@ namespace MURDoX.Core
                 .AddTransient<IUserService, UserService>()
                 .AddSingleton<IDataService, DataService>()
                 .AddSingleton<ITimerService, TimerService>()
+                .AddScoped<IXmlDataService, XmlDataService>()
                 .AddSingleton<ILoggerService, LoggerService>()
                 .BuildServiceProvider();
 
@@ -91,10 +104,14 @@ namespace MURDoX.Core
             RegisterSlashCommands();
 
             client.MessageCreated += Client_MessageCreated;
+            client.MessageDeleted += Client_MessageDeleted;
             client.ClientErrored += Client_ClientErrored;
             client.GuildMemberAdded += Client_GuildMemberAdded;
             client.GuildMemberRemoved += Client_GuildMemberRemoved;
-            
+
+            //Migrate the Database
+            //Startup startUp = new Startup();
+            //startUp.ConfigureDb(new AppDbContext());
 
             //connect client to gateway
             await client.ConnectAsync(new DiscordActivity("Everyone", ActivityType.Watching)).ConfigureAwait(false);
@@ -104,23 +121,89 @@ namespace MURDoX.Core
             timerService = new TimerService();
             timerService.Start();
 
-            //var messages = await dataService.LoadJsonAsync<WelcomeMessageJson>(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Assets", "Welcomer", "welcome_messages.json"));
+            //get guild members
+            var userService = new UserService(new AppDbContextFactory());
+            foreach (var guild in guildIdList)
+            {
+                await userService.GetServerMembersOnStartupAsync(await client.GetGuildAsync(guild.Item1));
+            }
+
             //wait - this keeps the console running
             await Task.Delay(-1).ConfigureAwait(false);
+        }
+
+        private async Task Client_MessageDeleted(DiscordClient sender, MessageDeleteEventArgs e)
+        {
+            var mentions = e.Message.MentionedUsers.ToList();
+            if (mentions.Count > 0)
+            {
+                var guild = e.Guild;
+                var channel = e.Message.Channel;
+                var pingAuthor = e.Message.Author;
+                var embedBuilder = new EmbedBuilderHelper();
+                var fields = new EmbedField[2];
+                fields[0] = new EmbedField { Name = "Author", Value = pingAuthor.Mention, Inline = true };
+                fields[1] = new EmbedField { Name = "Message", Value = e.Message.Content, Inline = true };
+                var embed = new Embed()
+                {
+                    Title = "MURDoX caught a ghost ping!",
+                    Color = "red",
+                    Fields = fields,
+                    ThumbnailImgUrl = "https://i.imgur.com/C575c6Q.png",
+                    Footer = "MURDoX ",
+                    TimeStamp = DateTime.UtcNow,
+                };
+
+                switch (guild.Name)
+                {
+                    case "DroppsDev":
+                        var logChannelId = (ulong)1004370669649281034;
+                        var logChannel = e.Guild.GetChannel(logChannelId);
+                        await logChannel.SendMessageAsync(embed: embedBuilder.Build(embed));
+                        break;
+                    case "Bot Playground":
+                        logChannelId = (ulong)888659367824601160;
+                        logChannel = e.Guild.GetChannel(logChannelId);
+                        await logChannel.SendMessageAsync(embed: embedBuilder.Build(embed));
+                        break;
+                    default:
+
+                        break;
+                }
+                await channel.SendMessageAsync(embed: embedBuilder.Build(embed));
+            }
+            else
+            {
+                var msgService = new DiscordMessageService();
+                await msgService.HandleDeletedMessage(e.Channel, e.Message);
+            }
+            
+
         }
 
         private async Task Client_GuildMemberRemoved(DiscordClient sender, GuildMemberRemoveEventArgs e)
         {
             var channelId = (ulong)795418412536168448;
             var channel = await sender.GetChannelAsync(channelId);
-            await channel.SendMessageAsync($"{e.Member.Mention} has left the server");
+            await channel.SendMessageAsync($"{e.Member.Username} has left the server");
 
         }
 
         private async Task Client_GuildMemberAdded(DiscordClient sender, GuildMemberAddEventArgs e)
         {
-           await e.Member.SendMessageAsync("welcome to Suncoast Software Community, please read #rules");
+            var user = e.Member;
+            var welcomeMessage = WelcomerHelper.GenerateWelcomeMessage();
+            welcomeMessage = welcomeMessage.Replace("User", user.Username);
+            await e.Member.SendMessageAsync(welcomeMessage);
+
+            if (e.Guild.Name.Equals("DroppsDev"))
+            {
+                ulong DroppsDevPublicGeneralChannelId = 1026762217372254228;
+                var channel = e.Guild.GetChannel(DroppsDevPublicGeneralChannelId);
+                await channel.SendMessageAsync(welcomeMessage);
+            }
         }
+                
 
         private Task Client_ClientErrored1(DiscordClient sender, ClientErrorEventArgs e)
         {
@@ -150,55 +233,47 @@ namespace MURDoX.Core
         {
             Task.Run(async () =>
             {
+                var channel = e.Message.Channel;
                 var author = e.Message.Author;
                 var message = e.Message;
-                ulong logChannelId = message.ChannelId;
-                var chatLog = new Log()
+
+                if (author.IsBot) return;
+
+                LevelHelper.SetXp(author.Username, 1);
+
+                if (message.Content.StartsWith("$"))
                 {
-                    LogId = logChannelId,
-                    AuthorId = author.Id,
-                    Title = "ChatMessage",
-                    Desc = "Chat Message",
-                    Message = message.Content,
-                    Type = LogType.MESSAGE,
-                    Created = DateTime.Now.ToUniversalTime()
-                };
-                chatLogs.Add(chatLog);
+                    var client = this.client!;
+                    var embedBuilder = new EmbedBuilderHelper();
+                    var details = message.Content.Split("$");
+                    var tagCommand = details[1];
+                    var embed = TagHelper.RequestTag(client, "MURDoX", tagCommand);
+                    await e.Message.Channel.SendMessageAsync(embed: embed);
+
+                    return;
+                }
+                if (message.Content.Contains("thanks"))
+                {
+
+                }
+
+                var xp = await LevelHelper.GetXp(author.Username);
+                if (xp >= 100)
+                    LevelHelper.SetRank(author.Username, Rank.REGULAR);
+
+                //messageQue.Enqueue(message.Content.ToString());
+                //xpList.Add(author.Id, xp);
+                //ulong logChannelId = message.ChannelId;
+
+
                 //_logger.Save(chatLog);
 
                 // var banneddWords = new string[] { "shit", "bitch", "asshole", "fuck", "fucker", "dickhead", "pussy" };
-                //var channel = await sender.GetChannelAsync(logChannelId).ConfigureAwait(false);
+                // var channel = await sender.GetChannelAsync(logChannelId).ConfigureAwait(false);
                 // var guildId = e.Guild.Id;
 
-                if (author.IsBot) return;//if message is from the bot, ignore it!
-
-                if (e.Message.Content.StartsWith("$"))
-                {
-                    await e.Message.Channel.SendMessageAsync("the $ is a reserved char command for mods");
-                   
-                    return;
-                }
-                if (e.Message.Content.StartsWith("!warn"))
-                {
-                    var guildId = e.Guild.Id;
-                    var guild = await sender.GetGuildAsync(guildId);
-                    var user = await guild.GetMemberAsync(e.Message.Author.Id);
-                    var roles = user.Roles;
-                    var canExecute = false;
-                    foreach (var role in roles)
-                    {
-                        if (role.ToString() == "mod")
-                            canExecute = true;
-                    }
-                    if (canExecute == false)
-                    {
-                        await e.Message.DeleteAsync();
-                        await e.Message.Channel.SendMessageAsync($"**{user.Username}** you dont have permission to execute this command!");
-                    }
-                       
-                     
-                }
-                //await e.Channel.SendMessageAsync($"messages logged: {chatLogs.Count.ToString()}");
+                
+               
             });
 
             return Task.CompletedTask;
@@ -210,6 +285,7 @@ namespace MURDoX.Core
         private async Task Client_Ready(DiscordClient sender, DSharpPlus.EventArgs.ReadyEventArgs e)
         {
             var bot = sender.CurrentUser.Username;
+            Console.ForegroundColor = FromHex("#0570fc");
             Console.WriteLine($"\r\n{bot} connected successfully!\r\n");
 
             await SendLogMessage($"{bot} has joined the server");
@@ -235,5 +311,18 @@ namespace MURDoX.Core
         }
 
         #endregion
+
+        public static ConsoleColor FromHex(string hex)
+        {
+            int argb = Int32.Parse(hex.Replace("#", ""), NumberStyles.HexNumber);
+            Color c = Color.FromArgb(argb);
+
+            int index = (c.R > 128 | c.G > 128 | c.B > 128) ? 8 : 0; // Bright bit
+            index |= (c.R > 64) ? 4 : 0; // Red bit
+            index |= (c.G > 64) ? 2 : 0; // Green bit
+            index |= (c.B > 64) ? 1 : 0; // Blue bit
+
+            return (System.ConsoleColor)index;
+        }
     }
 }

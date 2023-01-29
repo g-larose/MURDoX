@@ -1,5 +1,8 @@
-﻿using Microsoft.Extensions.DependencyInjection;
+﻿using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using MURDoX.Data;
+using MURDoX.Data.Factories;
 using MURDoX.Services.Services;
 using System;
 using System.Collections.Generic;
@@ -11,14 +14,6 @@ namespace MURDoX.Core
 {
     public class Startup
     {
-        private readonly IHost _host;
-        public Startup()
-        {
-            _host = Host.CreateDefaultBuilder().ConfigureServices(services =>
-            {
-
-            }).Build();
-        }
    
     }
 }

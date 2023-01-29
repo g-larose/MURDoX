@@ -28,6 +28,7 @@ namespace MURDoX.Core.Commands.User
         [Description("get's a mentioned member's info")]
         public async Task Whois(CommandContext ctx, [RemainingText] string args)
         {
+           
             await ctx.Channel.TriggerTypingAsync();
             var db = _dbFactory.CreateDbContext();
             var bot = ctx.Client.CurrentUser;
@@ -43,17 +44,20 @@ namespace MURDoX.Core.Commands.User
                var roleList = new List<string>();
                 for (int i = 0; i < roles.Count(); i++)
                 {
-                    roleList.Add(roles.ElementAt(i).Name);
+                    if (i == roles.Count() - 1)
+                        roleList.Add(roles.ElementAt(i).Name);
+                    else
+                        roleList.Add(roles.ElementAt(i).Name + ",");
                 }
                  userRoles.Append(String.Join(" ", roleList));
             }
-
+            
             var xpField = new EmbedField();
             var thanksField = new EmbedField();
             var warningsField = new EmbedField();
 
             var nameField = new EmbedField() { Name = "Member", Value = serverMember.Username, Inline = true };
-            var rolesField = new EmbedField() { Name = "Roles", Value = userRoles.ToString(), Inline = true };
+            var rolesField = new EmbedField() { Name = "Roles", Value = $"``{userRoles.ToString()}``", Inline = true };
             var bankField = new EmbedField() { Name = "Bank", Value = "0", Inline = true };
 
             if (user is not null)
@@ -70,8 +74,9 @@ namespace MURDoX.Core.Commands.User
                 warningsField = new EmbedField() { Name = "Warnings", Value = "0", Inline = true };
             }
                 
-            
-            var fields = new EmbedField[] { nameField, rolesField, xpField, thanksField, warningsField, bankField };
+            var discordMemberField = new EmbedField() { Name = "Joined", Value = serverMember.JoinedAt.DateTime.ToString(), Inline = true };
+
+            var fields = new EmbedField[] { discordMemberField, nameField, rolesField, xpField, thanksField, warningsField, bankField };
             var embedBuilder = new EmbedBuilderHelper();
             var embed = new Embed()
             {

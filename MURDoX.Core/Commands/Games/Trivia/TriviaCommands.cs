@@ -31,7 +31,7 @@ namespace MURDoX.Core.Commands.Games.Trivia
 
         [Command("trivia")]
         [Description("starts a new trivia game")]
-        [RequireRoles(RoleCheckMode.Any, "Owner")]
+        
         public async Task PlayTrivia(CommandContext ctx, [RemainingText] string cat = "")
         {
             ctx.Client.ComponentInteractionCreated += Client_ComponentInteractionCreated;
@@ -134,7 +134,7 @@ namespace MURDoX.Core.Commands.Games.Trivia
             var fields = new EmbedField[] { nameField, xpField };
             var deleteEmbed = new Embed()
             {
-                Desc = "Trivia Stopeed",
+                Desc = "Trivia Stopped",
                 Fields = fields,
                 TimeStamp = DateTime.Now,
             };
@@ -143,6 +143,7 @@ namespace MURDoX.Core.Commands.Games.Trivia
             //something went wrong or a mod stopped the trivia game 
             //display the scores foreach player in memory.
         }
+
 
         private void _killSwitch_Elapsed(object? sender, ElapsedEventArgs e)
         {

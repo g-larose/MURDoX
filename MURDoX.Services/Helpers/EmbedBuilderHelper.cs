@@ -1,4 +1,5 @@
-﻿using DSharpPlus.Entities;
+﻿using DSharpPlus;
+using DSharpPlus.Entities;
 using MURDoX.Services.Models;
 using System;
 using System.Collections.Generic;
@@ -14,7 +15,7 @@ namespace MURDoX.Services.Helpers
         {
             var _embed = new DiscordEmbedBuilder()
                 .WithAuthor(embed.Author, "", embed.AuthorAvatar)
-                .WithColor(GetColor(embed.Color!, DiscordColor.DarkGray))
+                .WithColor(EmbedColors.GetColor(embed.Color!, DiscordColor.DarkGray))
                 .WithTitle(embed.Title)
                 .WithDescription(embed.Desc)
                 .WithUrl(embed.LinkUrl)
@@ -37,21 +38,6 @@ namespace MURDoX.Services.Helpers
             return _embed;
         }
 
-        private DiscordColor GetColor(string colorName, DiscordColor defaultColor)
-        {
-            try
-            {
-                if (EmbedColors.Colors.ContainsKey(colorName))
-                {
-                    return EmbedColors.Colors[colorName];
-                }
-                else
-                    return defaultColor;
-            }
-            catch (Exception)
-            {
-                return DiscordColor.DarkGray;
-            }
-        }
+       
     }
 }

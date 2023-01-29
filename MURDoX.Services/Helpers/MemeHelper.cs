@@ -19,13 +19,21 @@ namespace MURDoX.Services.Helpers
             HtmlDocument doc = page.Load(url);
 
             HtmlNodeCollection urls = doc.DocumentNode.SelectNodes("//a[contains(@class, 'image-list-link')]/img");
+            int index = 0;
+            HtmlNode selectedNode = null;
 
             if (urls is not null)
             {
-                int index = rnd.Next(urls.Count);
-                memeUrl = $"https:{urls[index].Attributes["src"].Value}";
+                index = rnd.Next(urls.Count);
+                selectedNode = urls[index];
+
+                if (selectedNode is not null)
+                {
+                    memeUrl = $"{selectedNode.Attributes["src"].Value}";
+                }
             }
-            return memeUrl;
+            var fullUrl = $"https:{memeUrl}";
+            return fullUrl;
         }
         #endregion
     }
