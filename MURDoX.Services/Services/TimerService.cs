@@ -92,10 +92,11 @@ namespace MURDoX.Services.Services
             var hours = Timer.Elapsed.Hours;
             var days = Timer.Elapsed.Days;
             var weeks = (days % 365) / 7;
+            var months = (days % 365) / 12;
             var years = (days / 365);
             days -= ((years * 365) + (weeks * 7));
 
-            var uptime = new TimerModel(seconds, Minutes, hours, days, weeks, years);
+            var uptime = new TimerModel(seconds, Minutes, hours, days, weeks, months, years);
             return uptime;
         }
 

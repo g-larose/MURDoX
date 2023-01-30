@@ -1,12 +1,20 @@
 ﻿using DSharpPlus;
 using DSharpPlus.CommandsNext;
 using DSharpPlus.Entities;
+using MURDoX.Data.Factories;
 using MURDoX.Services.Models;
 
 namespace MURDoX.Services.Helpers
 {
     public class TagHelper
     {
+        private readonly AppDbContextFactory _dbFactory;
+
+        public TagHelper(AppDbContextFactory dbFactory)
+        {
+            _dbFactory = dbFactory;
+        }
+
 
         #region REQUEST TAG
         public static DiscordEmbed RequestTag(DiscordClient client, string author, string tag = "")
@@ -131,6 +139,17 @@ namespace MURDoX.Services.Helpers
                     };
                     return embedBuilder.Build(embed);
 
+                case "spacelink":
+                    embed = new Embed()
+                    {
+                        Color = "blurple",
+                        Title = "DroppsDec Space Link",
+                        Desc = "https://droppsdev.jetbrains.space/",
+                        Footer = "MURDoX ",
+                        TimeStamp = DateTime.UtcNow
+                    };
+                    return embedBuilder.Build(embed);
+
                 default:
                     
                     break;
@@ -140,6 +159,14 @@ namespace MURDoX.Services.Helpers
             return embedBuilder.Build(null);
         }
         #endregion
+
+        public Tag RequestSingleTagFromDb(string tagName)
+        {
+            var db = _dbFactory.CreateDbContext();
+            var tag = db.Tags?.Where(x => x.TagName== tagName).FirstOrDefault();
+            if (tag is not null) return tag;
+            return new Tag();
+        }
 
         //Getting Started: https://docs.microsoft.com/en-us/dotnet/csharp/getting-started
         //Introduction to C# (Interactive tutorial): https://docs.microsoft.com/en-us/dotnet/csharp/tour-of-csharp/tutorials/hello-world

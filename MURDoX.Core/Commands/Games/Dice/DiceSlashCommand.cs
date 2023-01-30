@@ -152,10 +152,10 @@ namespace MURDoX.Core.Commands.Games.Dice
             GameService.IsRunning = false;
             GameService.ClearGames();
             var followUpBuilder = new DiscordFollowupMessageBuilder();
-            await ctx.CreateResponseAsync(DSharpPlus.InteractionResponseType.DeferredChannelMessageWithSource, 
-                builder: new DiscordInteractionResponseBuilder().WithContent("MURDoX is thinking"));
+            await ctx.CreateResponseAsync(DSharpPlus.InteractionResponseType.ChannelMessageWithSource, 
+                builder: new DiscordInteractionResponseBuilder().WithContent("MURDoX is stopping **Dice Roller**"));
             await Task.Delay(2000);
-            await ctx.FollowUpAsync(builder: followUpBuilder.WithContent($"dice roller has been stopped by ``{ctx.Member.Username}``"));
+            await ctx.FollowUpAsync(builder: followUpBuilder.WithContent($"**Dice Roller** has been stopped by ``{ctx.Member.Username}``"));
 
         }
     }

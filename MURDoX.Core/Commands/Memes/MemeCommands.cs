@@ -18,31 +18,47 @@ namespace MURDoX.Core.Commands.Memes
         [Description("sends a random meme to the channel.")]
         public async Task LoadRandomMeme(CommandContext ctx, [RemainingText] string query)
         {
-            //var bot = ctx.Client.CurrentUser;
-            //var memeUrl = MemeHelper.GetMemeUrl(query);
-            //var embedBuilder = new EmbedBuilderHelper();
+            var bot = ctx.Client.CurrentUser;
+            query.Replace(" ", "-");
+            var memeUrl = MemeHelper.GetMemeUrl(query);
+            var embedBuilder = new EmbedBuilderHelper();
 
-            //await ctx.Channel.TriggerTypingAsync();
+            await ctx.Channel.TriggerTypingAsync();
+            var memeEmbed = new EmbedBuilderHelper();
+            if (!memeUrl.Equals("https:"))
+            {
+                var embed = new Embed()
+                {
+                    Title = $"{query} meme",
+                    Author = $"{bot.Username} ",
+                    Desc = $"",
+                    Footer = $"{bot.Username}©️",
+                    AuthorAvatar = bot.AvatarUrl,
+                    LinkUrl = "",
+                    ImgUrl = memeUrl,
+                    TimeStamp = DateTimeOffset.Now,
+                    FooterImgUrl = bot.AvatarUrl,
+                    Color = await ShuffleHelper.GetRandomEmbedColorAsync(),
+                };
+                //var testUrl = "https://i.imgflip.com/4/345v97.jpg";
+               
+                //memeEmbed.WithImageUrl(memeUrl).Build();
 
-            //if (memeUrl is not null)
-            //{
-            //    var embed = new Embed()
-            //    {
-            //        Title = $"{query} meme",
-            //        Author = $"{bot.Username} ",
-            //        Desc = $"",
-            //        Footer = $"{bot.Username}©️",
-            //        AuthorAvatar = bot.AvatarUrl,
-            //        LinkUrl = "",
-            //        ImgUrl = memeUrl,
-            //        TimeStamp = DateTimeOffset.Now,
-            //        FooterImgUrl = bot.AvatarUrl,
-            //        Color = await ShuffleHelper.GetRandomEmbedColorAsync(),
-            //    };
+                //await Task.Delay(500);
 
-
-                await ctx.Channel.SendMessageAsync("``Apparently`` there is a bug in ``Discord``.....so until further notice [fuck the meme generator]!");
-            //}
+                await ctx.Channel.SendMessageAsync(embed: memeEmbed.Build(embed));
+                //await ctx.Channel.SendMessageAsync("``Apparently`` there is a bug in ``Discord``.....so until further notice [fuck the meme generator]!");
+            }
+            else
+            {
+                var notFoundEmbed = new Embed()
+                {
+                    Color = await ShuffleHelper.GetRandomEmbedColorAsync(),
+                    Desc = "no meme was found, please try again.",
+                };
+                await ctx.Channel.SendMessageAsync(embed: memeEmbed.Build(notFoundEmbed));
+            }
+               
         }
     }
 }

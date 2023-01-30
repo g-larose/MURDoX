@@ -33,6 +33,44 @@ namespace MURDoX.Core.Commands.Tag
         {
             //ex tag command
             // !addtag category, name, description, content
+            var embedBuilder = new EmbedBuilderHelper();
+            Embed embed;
+
+            var tagDetails = args.Split(',');
+            if (tagDetails.Length < 4)
+            {
+                embed = new Embed()
+                {
+                    Color = await ShuffleHelper.GetRandomEmbedColorAsync(),
+                    Desc = "Wrong number of arguments. example Tag **[category, name, description, content]**"
+                };
+                await ctx.Channel.SendMessageAsync(embed: embedBuilder.Build(embed));
+            }
+            else
+            {
+                var tag = new Services.Models.Tag()
+                {
+                    Category = tagDetails[0].Trim(),
+                    TagName = tagDetails[1].Trim(),
+                    TagDesc = tagDetails[2].Trim(),
+                    Content = tagDetails[3].Trim(),
+                    CreatedBy = ctx.Message.Author.Username,
+                    CreateAt = DateTime.UtcNow,
+                };
+
+                var db = _dbFactory.CreateDbContext();
+                db.Add(tag);
+                await db.SaveChangesAsync();
+
+                embed = new Embed()
+                {
+                    Color = await ShuffleHelper.GetRandomEmbedColorAsync(),
+                    Desc = $"tag **{tag.TagName}** created!"
+                };
+                await ctx.Channel.SendMessageAsync(embed: embedBuilder.Build(embed));
+            }
+            
+
         }
         #endregion
 
@@ -43,6 +81,7 @@ namespace MURDoX.Core.Commands.Tag
         public async Task ListTags(CommandContext ctx)
         {
             //TODO: this should be a paginated response embed
+            await ctx.TriggerTypingAsync();
             var bot = ctx.Client.CurrentUser;
             var db = _dbFactory.CreateDbContext();
             var tags = db.Tags!.OrderByDescending(x => x.CreateAt).Take(5).ToList();
@@ -65,7 +104,7 @@ namespace MURDoX.Core.Commands.Tag
                 var embed = new Embed()
                 {
                     Color = await ShuffleHelper.GetRandomEmbedColorAsync(),
-                    Title = "TAGS",
+                    Title = "Top 5 TAGS",
                     Author = ctx.Member.Username,
                     AuthorAvatar = ctx.Member.AvatarUrl,
                     Desc = tagBuilder.ToString(),
@@ -74,11 +113,59 @@ namespace MURDoX.Core.Commands.Tag
                     TimeStamp = DateTime.UtcNow,
                 };
 
-                await ctx.TriggerTypingAsync();
+               
                 await ctx.Channel.SendMessageAsync(embed: embedBuilder.Build(embed));
             }
             
         }
         #endregion
+
+        [Command("tag")]
+        [Description("gets a single tag")]
+        public async Task Tag(CommandContext ctx, [RemainingText] string tagName)
+        {
+            var tagHelper = new TagHelper(_dbFactory);
+            var EmbedBuilder = new EmbedBuilderHelper();
+            Embed embed;
+            var tag = tagHelper.RequestSingleTagFromDb(tagName);
+
+            if (tag == null)
+            {
+                embed = new Embed()
+                {
+                    Color = await ShuffleHelper.GetRandomEmbedColorAsync(),
+                    Desc = "no tag found."
+                };
+
+                await ctx.Channel.SendMessageAsync(embed: EmbedBuilder.Build(embed));
+            }
+            else
+            {
+                var fields = new EmbedField[]
+                {
+                    new() { Name = "Category", Value = $"{tag.Category}", Inline = true },
+                    new() { Name = "Tag Name", Value = $"{tag.TagName}", Inline = true },
+                    new() { Name = "Description", Value = $"{tag.TagDesc}", Inline = true },
+                    new() { Name = "Content", Value = $"{tag.Content}", Inline = true },
+                    new() { Name = "Create By", Value = $"{tag.CreatedBy}", Inline = true },
+                    new() { Name = "Created At", Value = $"{tag.CreateAt}", Inline = true },
+                };
+
+                embed = new Embed()
+                {
+                    Color = await ShuffleHelper.GetRandomEmbedColorAsync(),
+                    Title = $"{tag.TagName}",
+                    Author = ctx.Message.Author.Username,
+                    AuthorAvatar = ctx.Message.Author.AvatarUrl,
+                    Fields = fields,
+                    Footer = "MURDoX ",
+                    TimeStamp= DateTime.UtcNow,
+                    FooterImgUrl = ctx.Client.CurrentUser.AvatarUrl,
+
+                };
+
+                await ctx.Channel.SendMessageAsync(embed: EmbedBuilder.Build(embed));
+            }
+        }
     }
 }

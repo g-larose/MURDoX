@@ -21,14 +21,17 @@ namespace MURDoX.Core.Commands.Bot
         {
             var bot = ctx.Client.CurrentUser;
             var heapMemory = $"{GC.GetTotalMemory(true) / 1024 / 1024:n0} MB";
-            var memberCount = ctx.Guild.MemberCount;
+           // var memberCount = ctx.Guild.MemberCount;
+            int guildCount = ctx.Client.Guilds.Count;
             var uptime = TimerService.GetBotUpTime();
             var fields = new EmbedField[4];
 
             fields[0] = new EmbedField { Name = "Bot Name:", Value = $"{bot.Username} ",Inline =  true };
             fields[1] = new EmbedField { Name = "Memory:", Value = $"{heapMemory} ",Inline =  true };
-            fields[2] = new EmbedField { Name = "Guild:", Value = $"{ctx.Guild.Name} ",Inline =  true };
-            fields[3] = new EmbedField { Name = "Uptime:", Value = $"{uptime} ",Inline =  true };
+            fields[2] = new EmbedField { Name = "Guilds:", Value = $"{guildCount} ",Inline =  true };
+            fields[3] = new EmbedField { Name = "Uptime:", Value = $"**{uptime.Years}** years **{uptime.Months}** months" +
+                                         $"**{uptime.Weeks}** weeks **{uptime.Days}** days **{uptime.Hours}** hours " +
+                                         $"**{uptime.Minutes}** minutes **{uptime.Seconds}** seconds", Inline =  true };
 
             var embedBuilder = new EmbedBuilderHelper();
 
