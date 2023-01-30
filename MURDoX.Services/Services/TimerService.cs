@@ -1,4 +1,7 @@
-﻿using MURDoX.Services.Interfaces;
+﻿using Humanizer;
+using Humanizer.Localisation;
+using MURDoX.Extentions;
+using MURDoX.Services.Interfaces;
 using MURDoX.Services.Models;
 using System;
 using System.Collections.Generic;
@@ -85,8 +88,9 @@ namespace MURDoX.Services.Services
             return uptime;
         }
 
-        public static TimerModel GetBotUpTime()
+        public static string GetBotUpTime()
         {
+            using var process  = Process.GetCurrentProcess();
             var seconds = Timer!.Elapsed.Seconds;
             var Minutes = Timer.Elapsed.Minutes;
             var hours = Timer.Elapsed.Hours;
@@ -97,7 +101,18 @@ namespace MURDoX.Services.Services
             days -= ((years * 365) + (weeks * 7));
 
             var uptime = new TimerModel(seconds, Minutes, hours, days, weeks, months, years);
-            return uptime;
+            var uptime1 = "";
+            try
+            {
+                var newTime = StartTime.Replace(":", ".").Replace("AM", string.Empty).Replace("PM", string.Empty).Trim();
+                var uptimeDate = double.Parse(newTime);
+                uptime1 = $"{DateTimeOffset.UtcNow.Subtract(process.StartTime).Humanize(2, minUnit: TimeUnit.Second, maxUnit: TimeUnit.Day)}";
+            }
+            catch (Exception ex)
+            {
+                var test = ex.Message;
+            }
+            return uptime1;
         }
 
         public string GetTimerStartDate()

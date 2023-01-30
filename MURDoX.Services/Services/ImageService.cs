@@ -1,4 +1,5 @@
-﻿using System;
+﻿using SixLabors.ImageSharp;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -8,6 +9,6 @@ namespace MURDoX.Services.Services
 {
     public class ImageService
     {
-        
+        Image image = Image.Load("");
     }
 }

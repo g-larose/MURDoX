@@ -53,7 +53,7 @@ namespace MURDoX.Core.Commands.Facts
                         factFields[1] = new EmbedField { Name = "Link", Value = fact.Link, Inline = true };
                         var factEmbed = new Embed()
                         {
-                            Title = $"Fact: ``{fact.Category!.ToUpper()}``",
+                            Title = $"Fact of the Day",
                             Author = $"{bot.Username} ",
                             Desc = $"{fact.Content!}",
                             Footer = $"{bot.Username} ©️",

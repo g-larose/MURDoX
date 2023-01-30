@@ -1,4 +1,5 @@
-﻿using System;
+﻿using MURDoX.Services.Models;
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.IO;
@@ -6,6 +7,8 @@ using System.Linq;
 using System.Runtime.Serialization.Json;
 using System.Text;
 using System.Threading.Tasks;
+
+
 
 namespace MURDoX.Extentions
 {
@@ -92,6 +95,13 @@ namespace MURDoX.Extentions
                 T jsonObject = (T)ser.ReadObject(ms);
                 return jsonObject;
             }
+        }
+
+        public static string HumanizeUptime(this TimerModel uptime)
+        {
+            //TODO: Work on Humanize Extension
+            
+            return "";
         }
     }
 }

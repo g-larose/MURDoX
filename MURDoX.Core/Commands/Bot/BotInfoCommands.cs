@@ -25,23 +25,22 @@ namespace MURDoX.Core.Commands.Bot
             int guildCount = ctx.Client.Guilds.Count;
             var uptime = TimerService.GetBotUpTime();
             var fields = new EmbedField[4];
+            //Desc = $"{botName} has been online for **{uptime}**"
+           
 
-            fields[0] = new EmbedField { Name = "Bot Name:", Value = $"{bot.Username} ",Inline =  true };
-            fields[1] = new EmbedField { Name = "Memory:", Value = $"{heapMemory} ",Inline =  true };
-            fields[2] = new EmbedField { Name = "Guilds:", Value = $"{guildCount} ",Inline =  true };
-            fields[3] = new EmbedField { Name = "Uptime:", Value = $"**{uptime.Years}** years **{uptime.Months}** months" +
-                                         $"**{uptime.Weeks}** weeks **{uptime.Days}** days **{uptime.Hours}** hours " +
-                                         $"**{uptime.Minutes}** minutes **{uptime.Seconds}** seconds", Inline =  true };
+            fields[0] = new EmbedField { Name = "Bot Name:", Value = $"{bot.Username} ", Inline = true };
+            fields[1] = new EmbedField { Name = "Memory:", Value = $"{heapMemory} ", Inline = true };
+            fields[2] = new EmbedField { Name = "Guilds:", Value = $"{guildCount} ", Inline = true };
+            fields[3] = new EmbedField { Name = "Uptime", Value = $"{bot.Username} has been online for **{uptime}**", Inline = true };
 
             var embedBuilder = new EmbedBuilderHelper();
 
             var embed = new Embed()
             {
                 Color = await ShuffleHelper.GetRandomEmbedColorAsync(),
-                ThumbnailImgUrl = bot.GetAvatarUrl(ImageFormat.Png),
-                Title = "Bot Info",
-                Desc = "Bot Information",
-                Fields = fields,
+                ThumbnailImgUrl = "https://i.imgur.com/v5SUa3s.png",
+                Title = "Bot Info", 
+                Fields =  fields,
                 Footer = $"{bot.Username} {DateTime.Now}",
             };
 

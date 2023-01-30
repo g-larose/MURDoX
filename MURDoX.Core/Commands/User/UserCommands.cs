@@ -109,32 +109,33 @@ namespace MURDoX.Core.Commands.User
 
             var startDateField = new EmbedField { Name = "Started On", Value = $"{botStartDate}", Inline = false };
 
-            var secondsField = new EmbedField { Name = "Seconds", Value = $"{uptime.Seconds}", Inline = true };
-            var minutesField = new EmbedField { Name = "Minutes", Value = $"{uptime.Minutes}", Inline = true };
-            var hoursField = new EmbedField { Name = "Hours", Value = $"{uptime.Hours}", Inline = true };
-            var daysField = new EmbedField { Name = "Days", Value = $"{uptime.Days}", Inline = true };
-            var weeksField = new EmbedField { Name = "Weeks", Value = $"{uptime.Weeks}", Inline = true };
-            var yearsField = new EmbedField { Name = "Years", Value = $"{uptime.Years}", Inline = true };
+            //var secondsField = new EmbedField { Name = "Seconds", Value = $"{uptime.Seconds}", Inline = true };
+            //var minutesField = new EmbedField { Name = "Minutes", Value = $"{uptime.Minutes}", Inline = true };
+            //var hoursField = new EmbedField { Name = "Hours", Value = $"{uptime.Hours}", Inline = true };
+            //var daysField = new EmbedField { Name = "Days", Value = $"{uptime.Days}", Inline = true };
+            //var weeksField = new EmbedField { Name = "Weeks", Value = $"{uptime.Weeks}", Inline = true };
+            //var monthsField = new EmbedField { Name = "Months", Value = $"{uptime.Months}", Inline = true };
+            //var yearsField = new EmbedField { Name = "Years", Value = $"{uptime.Years}", Inline = true };
 
             var messageAuthor = ctx.Message.Author;
             var botAvatar = ctx.Client.CurrentUser.AvatarUrl;
             var botName = ctx.Client.CurrentUser.Username;
             var guildId = ctx.Guild.Id;
-            var fields = new EmbedField[] { startDateField, yearsField, weeksField, daysField, hoursField, minutesField, secondsField };
+            //var fields = new EmbedField[] { startDateField, yearsField, monthsField, weeksField, daysField, hoursField, minutesField, secondsField };
             var embedBuilder = new EmbedBuilderHelper();
 
             Embed embed = new()
             {
-                Title = "UPTIME",
+                Title = $"UPTIME",
                 Author = $"{messageAuthor.Username} Requested Uptime!",
-                Desc = $"total time \'{botName}\' has been online.",
+                Desc = $"{botName} has been online for **{uptime}**",
                 Footer = $"{botName} ©️{DateTime.Now.ToLongDateString()}",
                 AuthorAvatar = messageAuthor.GetAvatarUrl(DSharpPlus.ImageFormat.Jpeg),
                 ImgUrl = null,
-                ThumbnailImgUrl = "https://i.imgur.com/9L09EZG.jpg",
+                ThumbnailImgUrl = "https://i.imgur.com/QpDCyCx.png",
                 FooterImgUrl = botAvatar,
                 Color = "orange",
-                Fields = fields
+               // Fields = fields
             };
 
             var _embed = embedBuilder.Build(embed);
