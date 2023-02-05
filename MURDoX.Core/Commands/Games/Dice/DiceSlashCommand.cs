@@ -44,7 +44,11 @@ namespace MURDoX.Core.Commands.Games.Dice
                 GameName = gameName,
                 IsRunning = true
             };
-           
+
+            if (GameService.IsValidGame(game.GameName))
+            {
+                //TODO: dont start a new dice game
+            }
             var newGame = GameService.StartNewGame(game);
             var interactionResponseBuilder = new DiscordInteractionResponseBuilder();
             var followUpBuilder = new DiscordFollowupMessageBuilder();
@@ -54,7 +58,12 @@ namespace MURDoX.Core.Commands.Games.Dice
             {
                 try
                 {
-                    await ctx.FollowUpAsync(builder: followUpBuilder.WithContent($"Game already in progress, please choose a new Game Name"));
+                    embed = new Embed()
+                    {
+                        Color = await ShuffleHelper.GetRandomEmbedColorAsync(),
+                        Desc = "Game already in progress, I won't let you start a new *Dice Roller* game against the same opponent",
+                    };
+                    await ctx.FollowUpAsync(builder: followUpBuilder.AddEmbed(embed: embedBuilder.Build(embed)));
                 }
                 catch (Exception ex)
                 {

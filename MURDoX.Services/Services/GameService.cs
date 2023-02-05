@@ -34,11 +34,14 @@ namespace MURDoX.Services.Services
 
         public static bool IsValidGame(string gameName)
         {
-            foreach (var game in games)
+            if (games.Count > 0)
             {
-                if (game.GameName == gameName) 
+                foreach (var game in games)
                 {
-                    return false;
+                    if (game.GameName == gameName)
+                    {
+                        return false;
+                    }
                 }
             }
             return true;

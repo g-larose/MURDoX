@@ -132,6 +132,7 @@ namespace MURDoX.Core
             await Task.Delay(-1).ConfigureAwait(false);
         }
 
+        #region MESSAGE DELETED
         private async Task Client_MessageDeleted(DiscordClient sender, MessageDeleteEventArgs e)
         {
             var mentions = e.Message.MentionedUsers.ToList();
@@ -177,10 +178,12 @@ namespace MURDoX.Core
                 var msgService = new DiscordMessageService();
                 await msgService.HandleDeletedMessage(e.Channel, e.Message);
             }
-            
+
 
         }
+        #endregion
 
+        #region GUILD MEMBER REMOVED
         private async Task Client_GuildMemberRemoved(DiscordClient sender, GuildMemberRemoveEventArgs e)
         {
             var channelId = (ulong)795418412536168448;
@@ -188,7 +191,9 @@ namespace MURDoX.Core
             await channel.SendMessageAsync($"{e.Member.Username} has left the server");
 
         }
+        #endregion
 
+        #region GUID MEMBER ADDED
         private async Task Client_GuildMemberAdded(DiscordClient sender, GuildMemberAddEventArgs e)
         {
             var user = e.Member;
@@ -203,16 +208,20 @@ namespace MURDoX.Core
                 await channel.SendMessageAsync(welcomeMessage);
             }
         }
-                
+        #endregion
 
+
+        #region CLIENT ERRORED
         private Task Client_ClientErrored1(DiscordClient sender, ClientErrorEventArgs e)
         {
             var _errorEvent = e.Exception.GetType();
             var _errorName = e.EventName;
+
             return Task.CompletedTask;
-            
-            
-        }
+
+
+        } 
+        #endregion
 
         #endregion
 

@@ -1,6 +1,8 @@
 ﻿using DSharpPlus.CommandsNext;
 using DSharpPlus.CommandsNext.Attributes;
 using DSharpPlus.Entities;
+using DSharpPlus.Interactivity.Extensions;
+using Microsoft.CodeAnalysis.CSharp.Syntax;
 using MURDoX.Data.Factories;
 using MURDoX.Services.Helpers;
 using MURDoX.Services.Models;
@@ -167,6 +169,67 @@ namespace MURDoX.Core.Commands.User
 
         }
 
+        #endregion
+
+        #region ASSIGN ROLE
+        [Command("getrole")]
+        [Description("sets a self assignable user role to command caller.")]
+        public async Task GetUserRole(CommandContext ctx)
+        {
+            var embedBuilder = new EmbedBuilderHelper();
+            List<DiscordEmoji> emojiList = new List<DiscordEmoji>();
+            try
+            {
+                emojiList = new List<DiscordEmoji>()
+                {
+                    DiscordEmoji.FromName(ctx.Client, ":beetle:"),
+                    DiscordEmoji.FromName(ctx.Client, ":bookmark:"),
+                    DiscordEmoji.FromName(ctx.Client, ":thinksharp:"),
+                };
+            }
+            catch (Exception ex)
+            {
+                var test = ex.Message;
+            }
+            var embed = new Embed();
+            embed = new Embed()
+            {
+                Color = await ShuffleHelper.GetRandomEmbedColorAsync(),
+                Desc = "react for the assignable role you want to set.",
+            };
+ 
+            var roleMessage = await ctx.Channel.SendMessageAsync(embed: embedBuilder.Build(embed));
+            foreach (var e in emojiList)
+            {
+                await roleMessage.CreateReactionAsync(e);
+            }
+
+            var interactivity = ctx.Client.GetInteractivity();
+            var emojiResult = await interactivity.CollectReactionsAsync(roleMessage, new TimeSpan(0, 0, 10));
+            var roleResults = emojiResult.Select(x => x.Emoji.GetDiscordName()).FirstOrDefault();
+            ulong role = roleResults switch
+            {
+                ":thinksharp:" => 1071858138241835219,
+                ":beetle:" => 1071869330083545109,
+                _ => 1071759676804444211,
+            };
+            var newRole = ctx.Guild.GetRole(role);
+            try
+            {
+                await ctx.Member!.GrantRoleAsync(newRole);
+            }
+            catch (Exception ex)
+            {
+                var test = ex.Message;
+            }
+            
+            embed = new Embed()
+            {
+                Color = await ShuffleHelper.GetRandomEmbedColorAsync(),
+                Desc = $"role {newRole.Name} has been granted",
+            };
+            await roleMessage.ModifyAsync(embed: embedBuilder.Build(embed));
+        }
         #endregion
 
 
