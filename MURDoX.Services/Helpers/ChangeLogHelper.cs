@@ -1,4 +1,5 @@
 ﻿using MURDoX.Services.Models;
+using Remora.Results;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -8,7 +9,7 @@ using System.Xml.Linq;
 
 namespace MURDoX.Services.Helpers
 {
-    public static class ChangeLogHelper 
+    public class ChangeLogHelper 
     {
         #region PRIVATE FIELDS
 
@@ -21,8 +22,9 @@ namespace MURDoX.Services.Helpers
         #endregion
 
         #region SAVE CHANGELOG TO FILE
-        public static int SaveChangelogToFile(ChangeLog changeLog)// we return a 0 for success or 1 for failure
+        public async Task<int> SaveChangelogToFileAsync(ChangeLog changeLog)// we return a 0 for success
         {
+            var ct = new CancellationTokenSource();
             if (!File.Exists(changeLogPath))
             {
                 var doc = new XDocument(
@@ -30,14 +32,15 @@ namespace MURDoX.Services.Helpers
                                 new XElement("logs",
                                 new XElement("log",
                                     new XAttribute("id", changeLog.Id),
-                                    new XElement("name", changeLog.Name),
+                                    new XAttribute("name", changeLog.Name),
                                     new XAttribute("content", changeLog.Content),
                                     new XAttribute("status", changeLog.Status),
                                     new XAttribute("timestamp", changeLog.Created_Timestamp))));
-                doc.Save(changeLogPath);
+                using (FileStream fs = new FileStream(changeLogPath, FileMode.Create, FileAccess.ReadWrite))
+                    await doc.SaveAsync(fs, SaveOptions.None, ct.Token);
                 return 0;
             }
-            else
+            else 
             {
                 var doc = XDocument.Load(changeLogPath);
                 var logElementNode = doc.Descendants("log")
@@ -48,12 +51,13 @@ namespace MURDoX.Services.Helpers
 
                 var log_element = new XElement("log",
                                     new XAttribute("id", changeLog.Id),
-                                    new XElement("name", changeLog.Name),
+                                    new XAttribute("name", changeLog.Name),
                                     new XAttribute("content", changeLog.Content),
                                     new XAttribute("status", changeLog.Status),
                                     new XAttribute("timestamp", changeLog.Created_Timestamp));
                 doc.Root!.Add(log_element);
-                doc.Save(changeLogPath);
+                using (FileStream fs = new FileStream(changeLogPath, FileMode.Create, FileAccess.ReadWrite))
+                    await doc.SaveAsync(fs, SaveOptions.None, ct.Token);
                 return 0;
             }
         }

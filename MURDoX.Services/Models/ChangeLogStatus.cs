@@ -12,5 +12,6 @@ namespace MURDoX.Services.Models
         IMPLIMENTED,
         ONHOLD,
         REMOVED,
+        DEFAULT,
     }
 }

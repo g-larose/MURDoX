@@ -150,7 +150,11 @@ namespace MURDoX.Core.Commands.User
         #endregion
 
         #region RANK
-
+        /// <summary>
+        /// build custom image to show Member rank info
+        /// </summary>
+        /// <param name="ctx"></param>
+        /// <returns>Task</returns>
         [Command("rank")]
         [Description("get's a members server rank")]
         public async Task Rank(CommandContext ctx)
@@ -172,6 +176,11 @@ namespace MURDoX.Core.Commands.User
         #endregion
 
         #region ASSIGN ROLE
+        /// <summary>
+        /// assignable role command for members
+        /// </summary>
+        /// <param name="ctx"></param>
+        /// <returns>Task</returns>
         [Command("getrole")]
         [Description("sets a self assignable user role to command caller.")]
         public async Task GetUserRole(CommandContext ctx)
@@ -216,7 +225,7 @@ namespace MURDoX.Core.Commands.User
             var newRole = ctx.Guild.GetRole(role);
             try
             {
-                await ctx.Member!.GrantRoleAsync(newRole);
+                await ctx.Member!.GrantRoleAsync(newRole); // this is the fucking problem
             }
             catch (Exception ex)
             {
