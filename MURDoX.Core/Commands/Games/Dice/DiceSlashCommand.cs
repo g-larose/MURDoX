@@ -21,6 +21,19 @@ namespace MURDoX.Core.Commands.Games.Dice
             var bot = ctx.Client.CurrentUser;
             var playerOne = ctx.Member;
             var playerTwo = user;
+            var embed = new Embed();
+            var embedBuilder = new EmbedBuilderHelper();
+
+            if (playerOne.Username.Equals(playerTwo.Username))
+            {
+                embed = new Embed()
+                {
+                    Color = await ShuffleHelper.GetRandomEmbedColorAsync(),
+                    Desc = $"I won't let you create a new **Dice Roller** game against yourself.",
+                };
+                await ctx.CreateResponseAsync(DSharpPlus.InteractionResponseType.ChannelMessageWithSource, builder: new DiscordInteractionResponseBuilder().AddEmbed(embed: embedBuilder.Build(embed)));
+                return;
+            }
             var gameId = Guid.NewGuid();
             var gameName = $"Dice-Roller: Game:{playerOne.Username.Trim()}";
 
@@ -125,7 +138,6 @@ namespace MURDoX.Core.Commands.Games.Dice
 
                     await Task.Delay(500);
 
-                    var embedBuilder = new EmbedBuilderHelper();
                     var fields = new EmbedField[]
                     {
                     new EmbedField() { Name = "Player", Value = game.Players[0].Player, Inline = true },
@@ -137,7 +149,7 @@ namespace MURDoX.Core.Commands.Games.Dice
                     new EmbedField() { Name = "Winner", Value = winner, Inline = true },
                     };
 
-                    var embed = new Embed()
+                    embed = new Embed()
                     {
                         AuthorAvatar = bot.AvatarUrl,
                         Color = await ShuffleHelper.GetRandomEmbedColorAsync(),
@@ -184,16 +196,18 @@ namespace MURDoX.Core.Commands.Games.Dice
             embed = new Embed()
             {
                 Color = await ShuffleHelper.GetRandomEmbedColorAsync(),
-                Desc = $"**Game: {gameToStop!.GameId}** has been stopped by ``{ctx.Member.Username}``"
+                Desc = $"MURDoX is stopping **{gameToStop!.GameName}**"
             };
+           
             var followUpBuilder = new DiscordFollowupMessageBuilder();
             await ctx.CreateResponseAsync(DSharpPlus.InteractionResponseType.ChannelMessageWithSource, 
                 builder: new DiscordInteractionResponseBuilder().AddEmbed(embed: embedBuilder.Build(embed)));
             await Task.Delay(2000);
+
             embed = new Embed()
             {
                 Color = await ShuffleHelper.GetRandomEmbedColorAsync(),
-                Desc = $"MURDoX is stopping **{gameToStop!.GameName}**"
+                Desc = $"**Game: {gameToStop!.GameId}** has been stopped by ``{ctx.Member.Username}``"
             };
             await ctx.FollowUpAsync(builder: followUpBuilder.AddEmbed(embed: embedBuilder.Build(embed)));
 
