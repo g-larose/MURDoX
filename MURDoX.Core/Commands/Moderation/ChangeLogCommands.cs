@@ -31,11 +31,12 @@ namespace MURDoX.Core.Commands.Moderation
                 Content = argDetails[2],
                 Created_Timestamp = DateTimeOffset.UtcNow,
             };
-
+            var embedBuilder = new EmbedBuilderHelper();
             var result = ChangeLogHelper.SaveChangelogToFile(changeLog);
             if (result == 0)
             {
                 //we have success , send embed to channel.
+
             }
             else
             {
