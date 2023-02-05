@@ -175,5 +175,6 @@ namespace MURDoX.Services.Helpers
         //.NET API Documentation: https://docs.microsoft.com/en-us/dotnet/api
         //Debugging in VS: https://docs.microsoft.com/en-us/visualstudio/debugger/using-breakpoints?view=vs-2022
         //How to use Breakpoints in VS: https://docs.microsoft.com/en-us/visualstudio/debugger/using-breakpoints?view=vs-2022
+        //MVVM https://stevemonaco.github.io/2020/08/wpf-2020-part2-mvvm-overview/
     }
 }

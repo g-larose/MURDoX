@@ -35,7 +35,6 @@ namespace MURDoX.Core.Commands.Tag
             // !addtag category, name, description, content
             var embedBuilder = new EmbedBuilderHelper();
             Embed embed;
-
             var tagDetails = args.Split(',');
             if (tagDetails.Length < 4)
             {

@@ -5,6 +5,8 @@ using MURDoX.Data.Factories;
 using MURDoX.Services.Helpers;
 using MURDoX.Services.Models;
 using MURDoX.Services.Services;
+using SixLabors.ImageSharp;
+using SixLabors.ImageSharp.Processing;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -126,7 +128,7 @@ namespace MURDoX.Core.Commands.User
 
             Embed embed = new()
             {
-                Title = $"UPTIME",
+                //Title = $"UPTIME",
                 Author = $"{messageAuthor.Username} Requested Uptime!",
                 Desc = $"{botName} has been online for **{uptime}**",
                 Footer = $"{botName} ©️{DateTime.Now.ToLongDateString()}",
@@ -145,6 +147,28 @@ namespace MURDoX.Core.Commands.User
 
         #endregion
 
-       
+        #region RANK
+
+        [Command("rank")]
+        [Description("get's a members server rank")]
+        public async Task Rank(CommandContext ctx)
+        {
+            var imageService = new ImageService(_dbFactory);
+            var bot = ctx.Client.CurrentUser;
+            var member = (DiscordMember)ctx.Message.Author;
+            var image = await imageService.GenerateRankImage(member);
+
+            var imagePath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Assets", "Images", "player_rank.png");
+            var msgBuilder = new DiscordMessageBuilder();
+            var buffer = File.ReadAllBytes(imagePath);
+            using FileStream fs = new FileStream(imagePath, FileMode.Open, FileAccess.Read);
+            using MemoryStream ms = new MemoryStream(buffer, 0, buffer.Length);
+            await msgBuilder.WithFile("player_rank.png", ms).SendAsync(ctx.Channel);
+
+        }
+
+        #endregion
+
+
     }
 }

@@ -38,7 +38,7 @@ namespace MURDoX.Core.Commands.Bot
             var embed = new Embed()
             {
                 Color = await ShuffleHelper.GetRandomEmbedColorAsync(),
-                ThumbnailImgUrl = "https://i.imgur.com/v5SUa3s.png",
+                ThumbnailImgUrl = "https://i.imgur.com/tbrKXgH.png",
                 Title = "Bot Info", 
                 Fields =  fields,
                 Footer = $"{bot.Username} {DateTime.Now}",

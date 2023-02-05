@@ -33,12 +33,24 @@ namespace MURDoX.Core.Commands.Leaderboard
                 var players = doc.Root!.Elements("score").ToList();
                 List<(string, int, string)> scores = new List<(string, int, string)>();
                 var playerStatsBuilder = new StringBuilder();
+
                 foreach (var player in players)
                 {
                     var game = player.Attribute("game")!.Value;
                     var playerName = player.Attribute("player_name")!.Value;
-                    var wins = int.Parse(player.Attribute("wins")!.Value);
-                    scores.Add((playerName, wins, game));
+                    var currentPlayer = playerName;
+                    var wins = int.TryParse(player.Attribute("wins")!.Value, out int currentWins);
+
+                    foreach (var p in players)
+                    {
+                        if (p.Attribute("player_name")!.Value.Equals(currentPlayer))
+                        {
+                            currentWins += int.Parse(p.Attribute("wins")!.Value);
+                        }
+                    }
+                    
+                    scores.Add((playerName, currentWins, game));
+                    scores = scores.Distinct().ToList();
                 }
 
                 var sorted = scores.OrderByDescending(x => x.Item2, new TupleComparer<int>());

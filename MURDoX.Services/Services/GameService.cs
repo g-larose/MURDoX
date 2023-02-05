@@ -12,7 +12,7 @@ namespace MURDoX.Services.Services
 {
     public static class GameService 
     {
-        static  List<Game> games = new List<Game>();
+        public static List<Game> games = new List<Game>();
         public static bool IsRunning { get; set; }
         public static Game StartNewGame(Game game)
         {
@@ -49,6 +49,13 @@ namespace MURDoX.Services.Services
             games.Clear();
         }
 
+        #region SAVE PLAYER SCORE TO AML
+        /// <summary>
+        /// saves a players score to the xml file
+        /// </summary>
+        /// <param name="playerName"></param>
+        /// <param name="wins"></param>
+        /// <param name="game"></param>
         public static void SavePlayerScoreToXml(string playerName, int wins, string game)
         {
             Directory.CreateDirectory(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "xml"));
@@ -64,7 +71,7 @@ namespace MURDoX.Services.Services
                                         new XAttribute("wins", wins.ToString()))));
                 doc.Save(path);
             }
-            else 
+            else
             {
                 doc = XDocument.Load(path);
                 var playerNode = doc.Descendants("score")!.Attributes("player_name").Where(x => x.Value.Equals(playerName));
@@ -97,6 +104,48 @@ namespace MURDoX.Services.Services
 
             }
 
+        } 
+        #endregion
+
+        #region GET PLAYER SCORE
+        /// <summary>
+        /// gets a players win count
+        /// </summary>
+        /// <param name="playerName"></param>
+        /// <returns>string</returns>
+        public static string GetPlayerScore(string playerName)
+        {
+            var path = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "xml", "playerscores.xml");
+            var wins = "";
+
+            if (!File.Exists(path))
+                return "0";
+            var doc = XDocument.Load(path);
+            var players = doc.Root!.Elements("score").ToList();
+            var player = players.Where(x => x.Attribute("player_name")!.Value.Equals(playerName)).FirstOrDefault();
+
+            if (player != null)
+            {
+                return wins = player!.Attributes("wins").FirstOrDefault()!.Value;
+            }
+
+            return "0";
         }
+        #endregion
+
+        #region GET GAME ID
+        public static Guid GetGameId(string gameName)
+        {
+            if (games.Count> 0)
+            {
+                foreach (var game in games)
+                {
+                    if (game.GameName.Equals(gameName))
+                        return game.GameId;
+                }
+            }
+            return Guid.Empty;
+        }
+        #endregion
     }
 }

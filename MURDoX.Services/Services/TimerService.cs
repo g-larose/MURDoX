@@ -21,6 +21,7 @@ namespace MURDoX.Services.Services
         public TimerService()
         {
             Start();
+            
         }
 
         public string GetStartDate()
@@ -106,7 +107,7 @@ namespace MURDoX.Services.Services
             {
                 var newTime = StartTime.Replace(":", ".").Replace("AM", string.Empty).Replace("PM", string.Empty).Trim();
                 var uptimeDate = double.Parse(newTime);
-                uptime1 = $"{DateTimeOffset.UtcNow.Subtract(process.StartTime).Humanize(2, minUnit: TimeUnit.Second, maxUnit: TimeUnit.Day)}";
+                uptime1 = $"{DateTimeOffset.UtcNow.Subtract(process.StartTime).Humanize(2, minUnit: TimeUnit.Minute, maxUnit: TimeUnit.Year)}";
             }
             catch (Exception ex)
             {
