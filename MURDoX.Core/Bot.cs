@@ -267,9 +267,19 @@ namespace MURDoX.Core
                 }
 
                 var xp = await LevelHelper.GetXp(author.Username);
-                if (xp >= 100)
-                    LevelHelper.SetRank(author.Username, Rank.REGULAR);
-
+                switch (xp)
+                {
+                    case int n when (n >= 3000 && n <= 15000):
+                        LevelHelper.SetRank(author.Username, Rank.REGULAR);
+                        break;
+                    case int n when (n >= 15001 && n <= 35000):
+                        LevelHelper.SetRank(author.Username, Rank.ASSOCIATE);
+                        break;
+                    case 35001:
+                        LevelHelper.SetRank(author.Username, Rank.MASTER);
+                        break;
+                }
+              
                 //messageQue.Enqueue(message.Content.ToString());
                 //xpList.Add(author.Id, xp);
                 //ulong logChannelId = message.ChannelId;

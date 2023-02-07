@@ -84,12 +84,13 @@ namespace MURDoX.Core.Commands.Moderation
                 #region List
                 case "list":
                     var changeLogs = await changeLogHelper.GetChangeLogListAsync();
-                    embedBuilder = new EmbedBuilderHelper();
-                    embed = new Embed();
                     var descBuilder = new StringBuilder();
+                    var logCount = 1;
+
                     foreach (var log in changeLogs)
                     {
-                        descBuilder.Append($"change log: {log.Id}: {log.Name}: {log.Content}: {log.Status}: {log.Created_Timestamp}\r\n");
+                        descBuilder.Append($"``{logCount}``. {log.Id}: {log.Name}: {log.Content}: {log.Status}: {log.Created_Timestamp}\r\n");
+                        logCount++;
                     }
                     if (changeLogs.Count > 0)
                     {

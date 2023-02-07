@@ -16,11 +16,11 @@ namespace MURDoX.Services.Helpers
         { 
             var dbFactory = new AppDbContextFactory();
             var db = dbFactory.CreateDbContext();
-            var user = db.Users.Where(x => x.Username== member).FirstOrDefault();
+            var user = db.Users!.Where(x => x.Username== member).FirstOrDefault();
 
             if (user != null)
             {
-                var xp = await db.Users.Where(x => x.Username== member).Select(x => x.XP).FirstOrDefaultAsync();
+                var xp = await db.Users!.Where(x => x.Username== member).Select(x => x.XP).FirstOrDefaultAsync();
                 return xp;
             }
 
@@ -31,11 +31,11 @@ namespace MURDoX.Services.Helpers
         {
             var dbFactory = new AppDbContextFactory();
             var db = dbFactory.CreateDbContext();
-            var user = db.Users.Where(x => x.Username == member).FirstOrDefault();
+            var user = db.Users!.Where(x => x.Username == member).FirstOrDefault();
 
             if (user != null)
             {
-                var xp = db.Users.Where(x => x.Username == member).Select(x => x.XP).FirstOrDefault();
+                var xp = db.Users!.Where(x => x.Username == member).Select(x => x.XP).FirstOrDefault();
                 xp += amount;
                 user.XP = xp;
                 user.Created = DateTime.UtcNow;
@@ -57,7 +57,7 @@ namespace MURDoX.Services.Helpers
         { 
             var dbFactory = new AppDbContextFactory();
             var db = dbFactory.CreateDbContext();
-            var rank = db.Users.Where(x => x.Username == member).Select(x => x.Rank).FirstOrDefault();
+            var rank = db.Users!.Where(x => x.Username == member).Select(x => x.Rank).FirstOrDefault();
 
             return rank;
         }
@@ -66,11 +66,22 @@ namespace MURDoX.Services.Helpers
         {
             var dbFactory = new AppDbContextFactory();
             var db = dbFactory.CreateDbContext();
-            var user = db.Users.Where(x => x.Username == member).Select(x => x).FirstOrDefault();
-            user.Rank = rank;
+            var user = db.Users!.Where(x => x.Username == member).Select(x => x).FirstOrDefault();
+            user!.Rank = rank;
 
             db.Update(user); 
             db.SaveChanges();
         }
+
+        #region GET THANKS
+        public static async Task<int> GetThanks(string username)
+        {
+            var dbFactory = new AppDbContextFactory();
+            var db = dbFactory.CreateDbContext();
+            var thanks = await db.Users!.Where(x => x.Username == username).Select(x => x.Thanks).FirstOrDefaultAsync();
+
+            return thanks;
+        }
+        #endregion
     }
 }
