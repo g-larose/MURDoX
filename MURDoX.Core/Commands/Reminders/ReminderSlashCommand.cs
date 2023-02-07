@@ -17,11 +17,13 @@ namespace MURDoX.Core.Commands.Reminders
 {
     public class ReminderSlashCommand : ApplicationCommandModule
     {
+      
         [SlashCommand("remind", "creates a reminder")]
         public async Task Reminder(InteractionContext ctx,
              [Option("duration", "I can understand 2m, 5m or one day or in five minutes")] string duration,
              [Option("reminder", "the reminder")] string reminderContent)
         {
+            
             TimeSpan _minimumReminderTime = TimeSpan.FromMinutes(3);
             var timerServiceHelper = new TimerServiceHelper(ctx.Client);
             var offset = await timerServiceHelper.GetOffsetForUserAsync(ctx.User.Id);
@@ -80,7 +82,6 @@ namespace MURDoX.Core.Commands.Reminders
             }
 
             var reminderTime = DateTimeOffset.UtcNow + parsedTime;
-            
             var totalDuration = durationFormatted.Entity.Humanize(1, maxUnit: TimeUnit.Year, minUnit: TimeUnit.Minute);
             
             embed = new Embed()
@@ -88,9 +89,13 @@ namespace MURDoX.Core.Commands.Reminders
                 Color = await ShuffleHelper.GetRandomEmbedColorAsync(),
                 Desc = $"Ok , I will remind you ``{reminderContent}`` in ``{totalDuration}`` from now"
             };
+            ReminderService reminderService = new(ctx.Channel, ctx.Member, timeResult, reminderContent);
             await ctx.FollowUpAsync(builder: followupBuilder.AddEmbed(embed: embedBuilder.Build(embed)));
+
 
                 
         }
+
+     
     }
 }

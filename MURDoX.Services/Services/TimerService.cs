@@ -1,5 +1,6 @@
 ﻿using Humanizer;
 using Humanizer.Localisation;
+using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using MURDoX.Extentions;
 using MURDoX.Services.Interfaces;
 using MURDoX.Services.Models;
@@ -15,12 +16,14 @@ namespace MURDoX.Services.Services
     public class TimerService : ITimerService, IDisposable
     {
         public static Stopwatch? Timer { get; set; }
+        
         public static string? StartDate { get; set; }
         public static string? StartTime { get; set; }
 
         public TimerService()
         {
             Start();
+            
             
         }
 
@@ -65,9 +68,24 @@ namespace MURDoX.Services.Services
             Reset();
         }
 
-        public double ConvertMillisecondsToSeconds(double milliseconds)
+        public static double ConvertMillisecondsToSeconds(double milliseconds)
         {
-            throw new NotImplementedException();
+            return Math.Round(milliseconds / 1000);
+        }
+
+        public static double ConvertMillisecondsToMinutes(double milliseconds)
+        {
+            return Math.Round(milliseconds / 60000);
+        }
+
+        public static double ConvertMillisecondsToHours(double milliseconds)
+        {
+            return milliseconds / (1000 * 60 * 60);
+        }
+
+        public static double ConvertSecondsToMinutes(double seconds)
+        {
+            return seconds / 60;
         }
 
         public double GetTimerSeconds()
