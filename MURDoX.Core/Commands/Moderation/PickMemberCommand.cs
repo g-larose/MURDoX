@@ -15,14 +15,24 @@ namespace MURDoX.Core.Commands.Moderation
         [Description("pick a random server member, use to select a winner for give aways")]
         public async Task PickRandomMember(CommandContext ctx)
         {
-            List<DiscordMember> users = ctx.Guild.Members.Values.Where(u => !u.IsBot).ToList();
-
+            var guild = ctx.Guild;
+            IEnumerable<DiscordMember> mems = await guild.GetAllMembersAsync();
+           
             int seed = DateTime.UtcNow.Millisecond + DateTime.UtcNow.Second;
             var random = new Random(seed);
+            var index = random.Next(mems.Count());
 
-            DiscordMember selectedUser = users[random.Next(users.Count)];
+            DiscordMember selectedUser;
 
-            await ctx.Channel.SendMessageAsync($"and the winner is... ``{selectedUser.Username}``");
+            do //loop until the selectedUser is not a bot
+            {
+                selectedUser = mems.ElementAt(index);
+            }
+            while (selectedUser.IsBot == true);
+
+           var msg =  await ctx.Channel.SendMessageAsync($"and the winner is... ``{selectedUser.Username}``");
+           await Task.Delay(2000);
+           await msg.ModifyAsync($"{selectedUser.Username} please dm a staff member for your prize!");
         }
     }
 }

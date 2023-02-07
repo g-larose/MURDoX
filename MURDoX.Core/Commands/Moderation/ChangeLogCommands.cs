@@ -1,5 +1,7 @@
 ﻿using DSharpPlus.CommandsNext;
 using DSharpPlus.CommandsNext.Attributes;
+using DSharpPlus.Entities;
+using MURDoX.Services.Extensions;
 using MURDoX.Services.Helpers;
 using MURDoX.Services.Models;
 using System;
@@ -32,24 +34,26 @@ namespace MURDoX.Core.Commands.Moderation
             var embed = new Embed();
             var changeLog = new ChangeLog();
 
-            if (argDetails.Length != 4) //if the wrong number of arguments are sent , the changelog cannot be built or saved. 
-            {
-                embed = new()
-                {
-                    Color = await ShuffleHelper.GetRandomEmbedColorAsync(),
-                    Desc = $"incorrect changelog arguments... command canceled!",
-                };
-                await ctx.Channel.SendMessageAsync(embed: embedBuilder.Build(embed));
-                return;
-            }
             switch (argDetails[0]) //handle the command parameter.
             {
+                #region ADD
                 case "add":
+                    if (argDetails.Count() != 4) //if the wrong number of arguments are sent , the changelog cannot be built or saved. 
+                    {
+                        embed = new()
+                        {
+                            Color = await ShuffleHelper.GetRandomEmbedColorAsync(),
+                            Desc = $"incorrect changelog arguments... command canceled!",
+                        };
+                        await ctx.Channel.SendMessageAsync(embed: embedBuilder.Build(embed));
+                        return;
+                    }
                     changeLog = new()
                     {
                         Id = Guid.NewGuid(),
                         Name = argDetails[1],
                         Content = argDetails[2],
+                        Status = argDetails[3].Trim().ConvertChangeLogStatusFromString(),
                         Created_Timestamp = DateTimeOffset.UtcNow,
                     };
 
@@ -62,7 +66,7 @@ namespace MURDoX.Core.Commands.Moderation
                             Color = await ShuffleHelper.GetRandomEmbedColorAsync(),
                             Desc = $"change log {changeLog.Id} has been created",
                             Footer = "MURDoX",
-                            TimeStamp= DateTimeOffset.UtcNow,
+                            TimeStamp = DateTimeOffset.UtcNow,
                             FooterImgUrl = bot.AvatarUrl,
                         };
                         await ctx.Channel.SendMessageAsync(embed: embedBuilder.Build(embed));
@@ -76,15 +80,38 @@ namespace MURDoX.Core.Commands.Moderation
                     await ctx.Channel.SendMessageAsync(embed: embedBuilder.Build(embed));
 
                     break;
+                #endregion
+                #region List
                 case "list":
-
+                    var changeLogs = await changeLogHelper.GetChangeLogListAsync();
+                    embedBuilder = new EmbedBuilderHelper();
+                    embed = new Embed();
+                    var descBuilder = new StringBuilder();
+                    foreach (var log in changeLogs)
+                    {
+                        descBuilder.Append($"change log: {log.Id}: {log.Name}: {log.Content}: {log.Status}: {log.Created_Timestamp}\r\n");
+                    }
+                    if (changeLogs.Count > 0)
+                    {
+                        embed = new Embed()
+                        {
+                            Color = "blurple",
+                            Desc = descBuilder.ToString(),   
+                        };
+                        await ctx.Channel.SendMessageAsync(embed: embedBuilder.Build(embed));
+                    }
                     break;
+                #endregion
+                #region REMOVE
                 case "remove":
 
                     break;
+                #endregion
+                #region EDIT
                 case "edit":
 
-                    break;
+                    break; 
+                #endregion
             }
            
 

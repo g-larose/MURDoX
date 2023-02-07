@@ -9,6 +9,8 @@ namespace MURDoX.Services.Extensions
 {
     public static class EnumConverterExtensions
     {
+
+        #region CONVERT CHANGELOGSTATUS FROM STRING
         /// <summary>
         /// converts a string representation of the ChangeLogStatus enum to a ChangeLogStatus
         /// </summary>
@@ -16,7 +18,7 @@ namespace MURDoX.Services.Extensions
         /// <returns>ChangeLogStatus</returns>
         public static ChangeLogStatus ConvertChangeLogStatusFromString(this string value)
         {
-            var result = value switch
+            var result = value.ToLower() switch
             {
                 "development" => ChangeLogStatus.DEVELOPMENT,
                 "implimented" => ChangeLogStatus.IMPLIMENTED,
@@ -27,5 +29,28 @@ namespace MURDoX.Services.Extensions
 
             return result;
         }
+        #endregion
+
+        #region CONVERT CHANGELOGSTATUS TO STRING
+        /// <summary>
+        /// converts a string representation of the ChangeLogStatus enum to a ChangeLogStatus
+        /// </summary>
+        /// <param name="value"></param>
+        /// <returns>string</returns>
+        public static string ConvertChangeLogStatusToString(this ChangeLogStatus value)
+        {
+            var result = value switch
+            {
+                 ChangeLogStatus.DEVELOPMENT => "development",
+                 ChangeLogStatus.IMPLIMENTED => "implimented",
+                 ChangeLogStatus.ONHOLD =>  "onhold" ,
+                 ChangeLogStatus.REMOVED => "removed",
+                _ => "default",
+            };
+
+            return result;
+        }
+        #endregion
+
     }
 }

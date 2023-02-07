@@ -94,16 +94,23 @@ namespace MURDoX.Core.Commands.Moderation
             var success = int.TryParse(count, out int newCount);
             int mCount = 0;
 
-            if (success)
+            try
             {
-                IEnumerable<DiscordMessage> allMessages = await ctx.Channel.GetMessagesAsync(newCount + 1).ConfigureAwait(false);
-                mCount = allMessages.Count();
-               
-                await ((DiscordChannel)ctx.Channel).DeleteMessagesAsync(allMessages);
-                const int delay = 1500;
-                DiscordMessage m = await ctx.Channel.SendMessageAsync($"```Delete {mCount - 1} messages [SUCESS!]```").ConfigureAwait(false);
-                await Task.Delay(delay);
-                await m.DeleteAsync();
+                if (success)
+                {
+                    IEnumerable<DiscordMessage> allMessages = await ctx.Channel.GetMessagesAsync(newCount + 1).ConfigureAwait(false);
+                    mCount = allMessages.Count();
+
+                    await ((DiscordChannel)ctx.Channel).DeleteMessagesAsync(allMessages);
+                    const int delay = 1500;
+                    DiscordMessage m = await ctx.Channel.SendMessageAsync($"```Delete {mCount - 1} messages [SUCESS!]```").ConfigureAwait(false);
+                    await Task.Delay(delay);
+                    await m.DeleteAsync();
+                }
+            }
+            catch (Exception ex)
+            {
+                var test = ex.Message;
             }
         }
         #endregion
