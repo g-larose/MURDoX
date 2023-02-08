@@ -2,6 +2,8 @@
 using DSharpPlus.CommandsNext;
 using DSharpPlus.CommandsNext.Attributes;
 using DSharpPlus.Entities;
+using DSharpPlus.Interactivity;
+using DSharpPlus.Interactivity.Extensions;
 using MURDoX.Data.Factories;
 using MURDoX.Services.Helpers;
 using MURDoX.Services.Interfaces;
@@ -84,6 +86,8 @@ namespace MURDoX.Core.Commands.Tag
             var bot = ctx.Client.CurrentUser;
             var db = _dbFactory.CreateDbContext();
             var tags = db.Tags!.OrderByDescending(x => x.CreateAt).Take(5).ToList();
+            var page = 1;
+            var pages = new List<Page>();
 
             if (tags.Count == 0) 
             {

@@ -16,6 +16,7 @@ namespace MURDoX.Data
         public DbSet<Tag>? Tags { get; set; }
         public DbSet<Suggestion>? Suggestions { get; set; }
         public DbSet<ServerMember>? Users { get; set; }
+        public DbSet<Reminder> Reminders { get; set; }
 
         public AppDbContext(DbContextOptions options) : base(options)
         {

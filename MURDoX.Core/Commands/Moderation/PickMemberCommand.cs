@@ -17,22 +17,26 @@ namespace MURDoX.Core.Commands.Moderation
         {
             var guild = ctx.Guild;
             IEnumerable<DiscordMember> mems = await guild.GetAllMembersAsync();
-           
-            int seed = DateTime.UtcNow.Millisecond + DateTime.UtcNow.Second;
-            var random = new Random(seed);
-            var index = random.Next(mems.Count());
-
             DiscordMember selectedUser;
-
-            do //loop until the selectedUser is not a bot
+            Thread pickWinnerThread = new Thread(async () =>
             {
-                selectedUser = mems.ElementAt(index);
-            }
-            while (selectedUser.IsBot == true);
+                do //loop until the selectedUser is not a bot
+                {
+                    int seed = DateTime.UtcNow.Millisecond + DateTime.UtcNow.Second;
+                    var random = new Random(seed);
+                    var index = random.Next(mems.Count());
+                    selectedUser = mems.ElementAt(index);
+                }
+                while (selectedUser.IsBot == true);
 
-           var msg =  await ctx.Channel.SendMessageAsync($"and the winner is... ``{selectedUser.Username}``");
-           await Task.Delay(2000);
-           await msg.ModifyAsync($"{selectedUser.Username} please dm a staff member for your prize!");
+
+                var msg = await ctx.Channel.SendMessageAsync($"and the winner is... ``{selectedUser.Username}``");
+                await Task.Delay(2000);
+                await msg.ModifyAsync($"{selectedUser.Username} please dm a staff member for your prize!");
+            });
+            pickWinnerThread.Start();
+           
+
         }
     }
 }

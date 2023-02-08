@@ -1,11 +1,17 @@
 ﻿using DSharpPlus;
 using DSharpPlus.Entities;
+using Humanizer;
+using Humanizer.Localisation;
+using MURDoX.Data.Factories;
 using MURDoX.Services.Helpers;
+using MURDoX.Services.Models;
+using NodaTime.Extensions;
 using Remora.Results;
+using System.Threading.Channels;
 
 namespace MURDoX.Services.Services
 {
-    public class ReminderService
+    public class ReminderService 
     {
         private string _reminder;
         private Result<TimeSpan> _duration;
@@ -17,6 +23,7 @@ namespace MURDoX.Services.Services
 
         public ReminderService(DiscordChannel channel, DiscordMember user, Result<TimeSpan> duration, string reminder)
         {
+
             _running = true;
             _user = user;
             _channel = channel;
@@ -29,29 +36,46 @@ namespace MURDoX.Services.Services
 
         }
 
+      
+
         private async void OnTimerElapsed(object? sender, System.Timers.ElapsedEventArgs e)
         {
 
             timerTickCount++;
             var stopTime = TimerService.ConvertSecondsToMinutes(timerTickCount);
-            // var stopTime = _duration.Entity.TotalMinutes;
-
-            if (timerTickCount == 60)
+            var embed = new Embed();
+            var embedBuilder = new EmbedBuilderHelper();
+            if (_duration.IsSuccess)
             {
-                    var test = "";
+                var reminderTime = _duration.Entity.Humanize(1, minUnit: TimeUnit.Minute, maxUnit: TimeUnit.Year);
+                embed = new Embed()
+                {
+                    Color = await ShuffleHelper.GetRandomEmbedColorAsync(),
+                    Desc = $"you asked me to remind you {_reminder} from {reminderTime} ago.",
+                };
+                if (stopTime == _duration.Entity.TotalMinutes)
+                {
+                    _running = false;
+                    await _channel.SendMessageAsync(embed: embedBuilder.Build(embed));
+                    await _user.SendMessageAsync(embed: embedBuilder.Build(embed));
+                    _reminderTimer.Stop();
+                    _reminderTimer.Close();
+                    
+                }
             }
-                   
-            if (stopTime == _duration.Entity.TotalMinutes)
+            else
             {
-                _running = false;
-               await  _channel.SendMessageAsync($"reminding {_user.Mention} to {_reminder} from {_duration.Entity.TotalMinutes} minutes ago!");
-               await  _user.SendMessageAsync($"you asked me to remind you {_reminder} {_duration.Entity.TotalMinutes} minutes ago");
+                embed = new Embed()
+                {
+                    Color = await ShuffleHelper.GetRandomEmbedColorAsync(),
+                    Desc = "Failed to initialize Reminder Service, Please try again later",
+                };
+                await _channel.SendMessageAsync(embed: embedBuilder.Build(embed));
                 _reminderTimer.Stop();
+                _reminderTimer.Close();
             }
-
-            
-                //success
-        }
+          
+        }     
 
     }
 }

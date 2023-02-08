@@ -139,7 +139,7 @@ namespace MURDoX.Core.Commands.Games.Trivia
                 TimeStamp = DateTime.Now,
             };
             await ctx.Channel.SendMessageAsync(embed: deleteEmbedBuilder.Build(deleteEmbed));
-            //TODO: Display the score foreach player
+            //TODO: Display the score foreach player, might need a paginated message.
             //something went wrong or a mod stopped the trivia game 
             //display the scores foreach player in memory.
         }

@@ -15,6 +15,8 @@ using MURDoX.Services.Helpers;
 using MURDoX.Services.Interfaces;
 using MURDoX.Services.Models;
 using MURDoX.Services.Services;
+using NodaTime;
+using NodaTime.TimeZones;
 using System.Drawing;
 using System.Globalization;
 using System.Linq;
@@ -80,12 +82,15 @@ namespace MURDoX.Core
 
             //configure the services
             var services = new ServiceCollection()
-                .AddTransient<AppDbContextFactory>()
+                .AddSingleton<AppDbContextFactory>()
                 .AddTransient<IUserService, UserService>()
                 .AddSingleton<IDataService, DataService>()
                 .AddSingleton<ITimerService, TimerService>()
                 .AddScoped<IXmlDataService, XmlDataService>()
                 .AddSingleton<ILoggerService, LoggerService>()
+                .AddSingleton<IDateTimeZoneSource>(TzdbDateTimeZoneSource.Default)
+                .AddSingleton<IDateTimeZoneProvider, DateTimeZoneCache>()
+                .AddTransient<TimerServiceHelper>()
                 .BuildServiceProvider();
 
             //set up commands configuration

@@ -12,8 +12,8 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace MURDoX.Services.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    [Migration("20230120200054_EditModelSuggestion")]
-    partial class EditModelSuggestion
+    [Migration("20230208224449_AddModel-Reminder")]
+    partial class AddModelReminder
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
@@ -56,6 +56,34 @@ namespace MURDoX.Services.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("Logs");
+                });
+
+            modelBuilder.Entity("MURDoX.Services.Models.Reminder", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid");
+
+                    b.Property<string>("Author")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<string>("Content")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<DateTimeOffset>("CreatedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<TimeSpan>("Duration")
+                        .HasColumnType("interval");
+
+                    b.Property<DateTimeOffset>("ExpiresAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("Reminders");
                 });
 
             modelBuilder.Entity("MURDoX.Services.Models.ServerMember", b =>
@@ -111,7 +139,7 @@ namespace MURDoX.Services.Migrations
                     b.Property<decimal>("AuthorId")
                         .HasColumnType("numeric(20,0)");
 
-                    b.Property<DateTimeOffset>("Created")
+                    b.Property<DateTime>("Created")
                         .HasColumnType("timestamp with time zone");
 
                     b.Property<string>("Discription")

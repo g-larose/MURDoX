@@ -1,4 +1,5 @@
 ﻿using DSharpPlus;
+using DSharpPlus.Entities;
 using Microsoft.Recognizers.Text.DateTime;
 using NodaTime;
 using Recognizers.Text.DateTime.Wrapper.Models.BclDateTime;
@@ -21,7 +22,7 @@ namespace MURDoX.Services.Helpers
                                                       "I can recognize times like 10m, 5h, 2h30m, and even natural language like 'three hours from now' and 'in 2 days'";
         private static readonly TimeSpan _buffer = TimeSpan.FromSeconds(2);
 
-        private static readonly IDateTimeZoneProvider _timezones;
+        private static IDateTimeZoneProvider _timezones;
         private readonly DiscordClient _client;
 
         public TimerServiceHelper(DiscordClient client)
@@ -101,13 +102,20 @@ namespace MURDoX.Services.Helpers
                 : ((timeModel as DateTimeV2DateTime)!.Value - refTime).Add(_buffer);
         }
 
-        public async Task<Offset?> GetOffsetForUserAsync(ulong userID)
+        public async Task<Offset?> GetOffsetForUserAsync(ulong userId)
         {
-            var user = await _client.GetUserAsync(userID);
-            if (user.Locale is not null)
-                return _timezones!.GetZoneOrNull(user.Locale)!.GetUtcOffset(Instant.FromDateTimeOffset(DateTimeOffset.UtcNow));
+            
+            var user = await _client.GetUserAsync(userId);
+            
+            if (user is not null)
+            {
+                var date = DateTime.UtcNow;
+                ZonedDateTime zDateTime = ZonedDateTime.FromDateTimeOffset(date);
+                var offset = zDateTime.Offset;
+                return offset;
+            }
 
-            return Offset.FromSeconds(1);
+            return null;
         }
     }
 

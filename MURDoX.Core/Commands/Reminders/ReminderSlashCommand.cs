@@ -7,6 +7,7 @@ using MURDoX.Data.Factories;
 using MURDoX.Services.Helpers;
 using MURDoX.Services.Models;
 using MURDoX.Services.Services;
+using NodaTime;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -17,10 +18,10 @@ namespace MURDoX.Core.Commands.Reminders
 {
     public class ReminderSlashCommand : ApplicationCommandModule
     {
-      
+
         [SlashCommand("remind", "creates a reminder")]
         public async Task Reminder(InteractionContext ctx,
-             [Option("duration", "I can understand 2m, 5m or one day or in five minutes")] string duration,
+             [Option("duration", "I can understand 3m, 5m or one day or in five minutes")] string duration,
              [Option("reminder", "the reminder")] string reminderContent)
         {
             
@@ -38,8 +39,8 @@ namespace MURDoX.Core.Commands.Reminders
             await ctx.Channel.TriggerTypingAsync();
             await Task.Delay(2000);
 
-            TimeSpan parsedTime;
-            if (!timeResult.IsDefined(out parsedTime))
+            //TimeSpan parsedTime;
+            if (!timeResult.IsDefined(out var parsedTime))
             {
                 embed = new Embed()
                 {
@@ -82,18 +83,32 @@ namespace MURDoX.Core.Commands.Reminders
             }
 
             var reminderTime = DateTimeOffset.UtcNow + parsedTime;
-            var totalDuration = durationFormatted.Entity.Humanize(1, maxUnit: TimeUnit.Year, minUnit: TimeUnit.Minute);
+            var totalDuration = timeResult.Entity.Humanize(1, maxUnit: TimeUnit.Year, minUnit: TimeUnit.Minute);
             
             embed = new Embed()
             {
                 Color = await ShuffleHelper.GetRandomEmbedColorAsync(),
-                Desc = $"Ok , I will remind you ``{reminderContent}`` in ``{totalDuration}`` from now"
+                Desc = $"Ok , I will remind you ``{reminderContent}``{reminderTime.ToTimestamp()} from now"
             };
             ReminderService reminderService = new(ctx.Channel, ctx.Member, timeResult, reminderContent);
             await ctx.FollowUpAsync(builder: followupBuilder.AddEmbed(embed: embedBuilder.Build(embed)));
 
 
                 
+        }
+
+        private void SetReminderInDb(Reminder reminder)
+        {
+            //TODO: add validation to see if this reminder already exists in the db ie call IsValidReminder(reminder);
+            var _dbFactory = new AppDbContextFactory();
+            var db = _dbFactory.CreateDbContext();
+            db.Add(reminder);
+            db.SaveChanges();
+        }
+
+        private bool IsValidReminder(Reminder reminder)
+        {
+            return false;
         }
 
      

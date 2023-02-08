@@ -12,6 +12,7 @@ namespace MURDoX.Services.Models
         public string Author { get; set; }  = string.Empty;
         public string Content { get; set; } = string.Empty;
         public TimeSpan Duration { get; set; }
+        public DateTimeOffset ExpiresAt { get; set; }
         public DateTimeOffset CreatedAt { get; set; }
     }
 }

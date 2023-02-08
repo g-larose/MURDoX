@@ -10,6 +10,6 @@ namespace MURDoX.Core.Extensions
     public static class DateTimeOffsetExtensions
     {
         public static string ToTimestamp(this DateTimeOffset dto, TimestampFormat format = TimestampFormat.Relative)
-            => $"<t:{dto.ToUniversalTime()}:{(char)format}>";
+            => $"<t:{dto.ToUnixTimeSeconds()}:{(char)format}>";
     }
 }
