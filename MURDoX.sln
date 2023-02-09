@@ -9,6 +9,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MURDoX.Data", "MURDoX.Data\
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MURDoX.Services", "MURDoX.Services\MURDoX.Services.csproj", "{343B7FD2-7B5A-4460-8229-8A1CA1AEC913}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Benchmarks", "Benchmarks\Benchmarks.csproj", "{2691AA0F-5417-4B11-BA7A-A73EEB044E1D}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -27,6 +29,10 @@ Global
 		{343B7FD2-7B5A-4460-8229-8A1CA1AEC913}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{343B7FD2-7B5A-4460-8229-8A1CA1AEC913}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{343B7FD2-7B5A-4460-8229-8A1CA1AEC913}.Release|Any CPU.Build.0 = Release|Any CPU
+		{2691AA0F-5417-4B11-BA7A-A73EEB044E1D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{2691AA0F-5417-4B11-BA7A-A73EEB044E1D}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{2691AA0F-5417-4B11-BA7A-A73EEB044E1D}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{2691AA0F-5417-4B11-BA7A-A73EEB044E1D}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

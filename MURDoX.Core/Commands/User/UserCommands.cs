@@ -1,4 +1,5 @@
-﻿using DSharpPlus.CommandsNext;
+﻿using BenchmarkDotNet.Attributes;
+using DSharpPlus.CommandsNext;
 using DSharpPlus.CommandsNext.Attributes;
 using DSharpPlus.Entities;
 using DSharpPlus.Interactivity.Extensions;
@@ -11,6 +12,7 @@ using SixLabors.ImageSharp;
 using SixLabors.ImageSharp.Processing;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -241,6 +243,38 @@ namespace MURDoX.Core.Commands.User
         }
         #endregion
 
+        #region RANDOM NUMBER
+     
+        [Command("randomnumber")]
+        public async Task RandomNumber(CommandContext ctx, [RemainingText] string args)
+        {
+            var timer = new Stopwatch();
+            timer.Start();
+            if (args == null) return;
+            
+            var embedBuilder = new EmbedBuilderHelper();
+            var embed = new Embed();
+            var details = args.Split(',');
 
+            if (int.TryParse(details[0].ToString(), out int minValue))
+            {
+                if (int.TryParse(details[1], out int maxValue))
+                {
+                    Random rnd = new Random();
+                    int num = rnd.Next(minValue, maxValue);
+                    timer.Stop();
+                    embed = new Embed()
+                    {
+                        Color = await ShuffleHelper.GetRandomEmbedColorAsync(),
+                        Desc = $"{ctx.Message.Author.Username} picked random number [{num}] from range {minValue} and {maxValue}",
+                    };
+                    var ns = timer.ElapsedMilliseconds * 1000;
+                    await ctx.Channel.SendMessageAsync(embed: embedBuilder.Build(embed));
+                    await ctx.Channel.SendMessageAsync($"{timer.ElapsedTicks}ms");
+                }
+            }
+
+        }
+        #endregion
     }
 }

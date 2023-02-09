@@ -7,6 +7,7 @@ using DSharpPlus.Interactivity.Enums;
 using DSharpPlus.Interactivity.Extensions;
 using DSharpPlus.SlashCommands;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Storage;
 using Microsoft.Extensions.DependencyInjection;
 using MURDoX.Data;
@@ -115,6 +116,7 @@ namespace MURDoX.Core
             client.GuildMemberRemoved += Client_GuildMemberRemoved;
 
             //Migrate the Database
+            
             //Startup startUp = new Startup();
             //startUp.ConfigureDb(new AppDbContext());
 

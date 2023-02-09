@@ -25,7 +25,7 @@ namespace MURDoX.Services.Services
             };
 
             var logChannel = guild.GetChannel(channelId);
-            await logChannel.SendMessageAsync($"**{member.Username}** deleted a message from **{channel.Name}**");
+            await logChannel.SendMessageAsync($"**{member.Username}** deleted message [{msg.Content}] from **{channel.Name}**");
 
         }
     }

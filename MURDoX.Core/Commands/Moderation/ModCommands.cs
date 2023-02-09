@@ -10,11 +10,7 @@ using MURDoX.Services.Helpers;
 using MURDoX.Services.Interfaces;
 using MURDoX.Services.Models;
 using MURDoX.Services.Services;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+
 
 namespace MURDoX.Core.Commands.Moderation
 {
@@ -29,7 +25,7 @@ namespace MURDoX.Core.Commands.Moderation
             _dbFactory = dbFactory ?? throw new ArgumentNullException(nameof(dbFactory));
             _logger = logger ?? throw new ArgumentNullException(nameof(logger));
             _utilityHelper = new UtilityHelper(dbFactory, logger);
-           
+
         }
 
         #region WARN
@@ -68,13 +64,49 @@ namespace MURDoX.Core.Commands.Moderation
                 await _utilityHelper.CreateNewServerMember(newUser);
                 warnings = 1;
             }
-           
+
             await ctx.Channel.SendMessageAsync($"{user.Mention} has been warned : Reason **[{reason}]** total warnings : **{warnings}**");
         }
         #endregion
 
-        #region MUTE
+        #region TIMEOUT
+        [Command("timeout")]
+        [RequireRoles(RoleCheckMode.Any, "mod", "Admin")]
+        public async Task TimeoutMember(CommandContext ctx, DiscordUser user, [RemainingText] string args)
+        {
+            Random random= new Random();
+            var userId = user.Id;
+            var mem = ctx.Guild.GetMemberAsync(userId);
+            var details = args.Split(',');
+            var embedBuilder = new EmbedBuilderHelper();
+            var embed = new Embed();
+            var _reason = details[1] ?? "no reason given";
+            var duration = args[0].ToString();
+            if (mem != null)
+            {
+                double.TryParse(duration, out double d);
+                var timeOut = DateTime.Now.AddMinutes(d);
+                embed = new Embed()
+                {
+                    Color = await ShuffleHelper.GetRandomEmbedColorAsync(),
+                    Desc = $"**[{mem.Result.Username}]** has a {duration}m timeout, **Reason [{_reason}]**",
+                };
 
+                try
+                {
+                    await mem.Result.TimeoutAsync(timeOut, _reason);
+                }
+                catch (Exception ex)
+                {
+
+                    var message = ex.Message;
+                }
+                await ctx.Channel.SendMessageAsync(embed: embedBuilder.Build(embed));
+
+               
+            }
+
+        }
         #endregion
 
         #region KICK

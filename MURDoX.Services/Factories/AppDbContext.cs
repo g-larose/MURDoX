@@ -20,15 +20,13 @@ namespace MURDoX.Data
 
         public AppDbContext(DbContextOptions options) : base(options)
         {
-
+            //Database.Migrate();
         }
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
             base.OnConfiguring(optionsBuilder);
-       
-            
-            
+ 
         }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
@@ -36,7 +34,7 @@ namespace MURDoX.Data
             base.OnModelCreating(modelBuilder);
         }
 
-        //public override DatabaseFacade Database => base.Database;
+       public override DatabaseFacade Database => base.Database;
        
     }
 }

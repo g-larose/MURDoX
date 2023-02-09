@@ -12,8 +12,8 @@ using System.Threading.Tasks;
 
 namespace MURDoX.Core
 {
-    public class Startup
+    public static class Startup
     {
-   
+    
     }
 }
