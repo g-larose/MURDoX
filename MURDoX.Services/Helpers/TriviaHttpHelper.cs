@@ -6,6 +6,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Net;
 using System.Text;
+using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 
 namespace MURDoX.Services.Helpers
@@ -42,8 +43,16 @@ namespace MURDoX.Services.Helpers
 
             HttpResponseMessage response = await request.GetAsync(EndPoint);
             string content = await response.Content.ReadAsStringAsync();
-
+            content = Sanitize(content);
             return content;
+        }
+
+        private static string Sanitize(string content)
+        {
+            Regex matches = new Regex("(&#?[a-zA-Z0-9]+;)");
+            string output = matches.Replace(content, "");
+
+            return output;
         }
     }
 }

@@ -51,7 +51,7 @@ namespace MURDoX.Services.Services
                 embed = new Embed()
                 {
                     Color = await ShuffleHelper.GetRandomEmbedColorAsync(),
-                    Desc = $"you asked me to remind you {_reminder}, {reminderTime} ago.",
+                    Desc = $"you asked me to remind you **{_reminder}**, {reminderTime} ago.",
                 };
                 if (stopTime == _duration.Entity.TotalMinutes)
                 {

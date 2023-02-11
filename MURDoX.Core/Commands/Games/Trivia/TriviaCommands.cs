@@ -3,7 +3,7 @@ using DSharpPlus.CommandsNext;
 using DSharpPlus.CommandsNext.Attributes;
 using DSharpPlus.Entities;
 using DSharpPlus.EventArgs;
-using MURDoX.Core.Utilities.Converters;
+using DSharpPlus.Interactivity;
 using MURDoX.Data.Factories;
 using MURDoX.Extentions;
 using MURDoX.Services.Helpers;
@@ -45,7 +45,6 @@ namespace MURDoX.Core.Commands.Games.Trivia
             seconds = 0;
             timer.Interval = 1000;
             timer.Elapsed += Timer_Elapsed;
-           // timer.AutoReset = true;
             timer.Enabled = true;
             timer.Start();
             running = true;
@@ -90,9 +89,9 @@ namespace MURDoX.Core.Commands.Games.Trivia
                     var pickedQuestion = questions[index];
                     var answers = pickedQuestion.Answers!;
                     correctAnswer = pickedQuestion.CorrectAnswer!.Replace("&rsquo;", string.Empty).Replace("&#039;", "'").Replace("&quot;", "'");
-                    string answerOne = answers[0].ToString();
-                    string answerTwo = answers[1].ToString();
-                    string answerThree = answers[2].ToString();
+                    var answerOne = answers[0].ToString();
+                    var answerTwo = answers[1].ToString();
+                    var answerThree = answers[2].ToString();
                     answerOne.Replace("&rsquo;", string.Empty).Replace("&#039;", "'").Replace("&quot;", "'");
                     answerTwo.Replace("&rsquo;", string.Empty).Replace("&#039;", "'").Replace("&quot;", "'");
                     answerThree.Replace("&rsquo;", string.Empty).Replace("&#039;", "'").Replace("&quot;", "'");
@@ -139,9 +138,6 @@ namespace MURDoX.Core.Commands.Games.Trivia
                 TimeStamp = DateTime.Now,
             };
             await ctx.Channel.SendMessageAsync(embed: deleteEmbedBuilder.Build(deleteEmbed));
-            //TODO: Display the score foreach player, might need a paginated message.
-            //something went wrong or a mod stopped the trivia game 
-            //display the scores foreach player in memory.
         }
 
 
@@ -198,7 +194,6 @@ namespace MURDoX.Core.Commands.Games.Trivia
                 responseBuilder.AddEmbed(embedBuilder.Build(embed));
                     
                 await e.Interaction.CreateResponseAsync(InteractionResponseType.UpdateMessage, responseBuilder);
-                //await e.Interaction.CreateFollowupMessageAsync(followUpMessageBuilder);
 
                 await _userService.UpdateOrAddXpToUser(user, 100);
             }  
@@ -219,7 +214,6 @@ namespace MURDoX.Core.Commands.Games.Trivia
                 responseBuilder.AddEmbed(embedBuilder1.Build(embed1));
 
                 await e.Interaction.CreateResponseAsync(InteractionResponseType.UpdateMessage, responseBuilder);
-                //await e.Interaction.CreateFollowupMessageAsync(followUpMessageBuilder1);
             }
 
             
@@ -229,6 +223,66 @@ namespace MURDoX.Core.Commands.Games.Trivia
         {
             seconds++;
         }
+
+
+        #region STOP TRIVIA
+        [Command("triviastop")]
+        [Description("stops a trivia game")]
+        public async Task StopTrivia(CommandContext ctx)
+        {
+            EmbedBuilderHelper embedBuilder = new();
+            Embed embed = new();
+            if (running)
+            {
+                running = false;
+                embedBuilder = new();
+                embed = new()
+                {
+                    Color = await ShuffleHelper.GetRandomEmbedColorAsync(),
+                    Desc = $"Trivia stoppped by **{ctx.Message.Author.Username}**",
+                };
+
+                await ctx.Channel.SendMessageAsync(embed: embedBuilder.Build(embed));
+                return;
+            }
+
+            embed = new()
+            {
+                Color = await ShuffleHelper.GetRandomEmbedColorAsync(),
+                Desc = "I could not find a running trivia game!",
+            };
+            await ctx.Channel.SendMessageAsync(embed: embedBuilder.Build(embed));
+        }
+        #endregion
+
+        #region LIST PLAYER SCORES
+        [Command("triviascores")]
+        [Description("list's trivia scores for each player")]
+        public async Task ListTriviaScores(CommandContext ctx)
+        {
+            List<Page> pages = new List<Page>();
+            EmbedBuilderHelper embedBuilder = new();
+            Embed embed = new();
+            if (userPoints.Count== 0)
+            {
+                embed = new()
+                {
+                    Color = await ShuffleHelper.GetRandomEmbedColorAsync(),
+                    Desc = "no scores to fetch.", 
+                };
+                await ctx.Channel.SendMessageAsync(embed: embedBuilder.Build(embed));
+                return;
+            }
+            int count = 1;
+            foreach (KeyValuePair<string, int> scores in userPoints)
+            {
+                if (count > 6)
+                {
+                    count = 1;
+                }
+            }
+        }
+        #endregion
 
     }
 }
