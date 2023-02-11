@@ -4,7 +4,7 @@
 * [ ] **work on logger system**
 * [ ] **work on MOD commands**
     * [x] Warn 
-    * [ ] Mute
+    * [ ] Timeout
     * [ ] Kick 
     * [ ] Ban 
     * [ ] Grant Role 
