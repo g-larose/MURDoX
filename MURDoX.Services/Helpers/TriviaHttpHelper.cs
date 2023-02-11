@@ -18,19 +18,17 @@ namespace MURDoX.Services.Helpers
             dynamic? quests = JsonConvert.DeserializeObject(response!);
             List<Question> Questions = new();
 
-            if (quests != null)
+            if (quests == null) return Questions;
+            foreach (var quest in quests["results"])
             {
-                foreach (var quest in quests["results"])
-                {
-                    Question question = new();
-                    question.Category = quest.category;
-                    question._Question = quest.question;
-                    question.Type = quest.type;
-                    question.Difficulty = quest.difficulty;
-                    question.CorrectAnswer = quest.correct_answer;
-                    question.Answers = quest.incorrect_answers;
-                    Questions.Add(question);
-                }
+                Question question = new();
+                question.Category = quest.category;
+                question._Question = quest.question;
+                question.Type = quest.type;
+                question.Difficulty = quest.difficulty;
+                question.CorrectAnswer = quest.correct_answer;
+                question.Answers = quest.incorrect_answers;
+                Questions.Add(question);
             }
             return Questions;
         }

@@ -1,4 +1,5 @@
-﻿using DSharpPlus;
+﻿using System.Text;
+using DSharpPlus;
 using DSharpPlus.CommandsNext;
 using DSharpPlus.CommandsNext.Attributes;
 using DSharpPlus.Entities;
@@ -31,7 +32,6 @@ namespace MURDoX.Core.Commands.Games.Trivia
 
         [Command("trivia")]
         [Description("starts a new trivia game")]
-        
         public async Task PlayTrivia(CommandContext ctx, [RemainingText] string cat = "")
         {
             ctx.Client.ComponentInteractionCreated += Client_ComponentInteractionCreated;
@@ -61,69 +61,67 @@ namespace MURDoX.Core.Commands.Games.Trivia
 
 
             while (running)
-            { 
-                if (seconds >= 25)
+            {
+                if (!(seconds >= 25)) continue;
+                seconds = 0;
+                var rnd = new Random();
+
+                if (questions.Count < 1)
                 {
-                    seconds = 0;
-                    Random rnd = new Random();
+                    await ctx.Channel.SendMessageAsync("Reloading questions, hang tight!");
+                    await ctx.Channel.TriggerTypingAsync();
 
-                    if (questions.Count < 1)
+                    try
                     {
-                        await ctx.Channel.SendMessageAsync("Reloading questions, hang tight!");
-                        await ctx.Channel.TriggerTypingAsync();
+                        questionRequest = await TriviaHttpHelper.MakeQuestionRequest(cat, "easy");
+                        questions = TriviaHttpHelper.HandleQuestionResponse(questionRequest);
 
-                        try
-                        {
-                            questionRequest = await TriviaHttpHelper.MakeQuestionRequest(cat, "easy");
-                            questions = TriviaHttpHelper.HandleQuestionResponse(questionRequest);
-
-                            if (questions.Count == 0)
-                                continue;
-                        }
-                        catch (Exception ex)
-                        {
-                            var message = ex.Message;
-                        }
+                        if (questions.Count == 0)
+                            continue;
                     }
-                    var index = rnd.Next(0, questions.Count);
-                    var pickedQuestion = questions[index];
-                    var answers = pickedQuestion.Answers!;
-                    correctAnswer = pickedQuestion.CorrectAnswer!.Replace("&rsquo;", string.Empty).Replace("&#039;", "'").Replace("&quot;", "'");
-                    var answerOne = answers[0].ToString();
-                    var answerTwo = answers[1].ToString();
-                    var answerThree = answers[2].ToString();
-                    answerOne.Replace("&rsquo;", string.Empty).Replace("&#039;", "'").Replace("&quot;", "'");
-                    answerTwo.Replace("&rsquo;", string.Empty).Replace("&#039;", "'").Replace("&quot;", "'");
-                    answerThree.Replace("&rsquo;", string.Empty).Replace("&#039;", "'").Replace("&quot;", "'");
-                    var q = pickedQuestion?._Question!.ToString()?.Replace("&rsquo;", string.Empty).Replace("&#039;", "'").Replace("&quot;", "'");
-                    var answer_one_btn = new DiscordButtonComponent(ButtonStyle.Secondary, answers[0].ToString(), answers[0].ToString());
-                    var answer_two_btn = new DiscordButtonComponent(ButtonStyle.Secondary, answers[1].ToString(), answers[1].ToString());
-                    var answer_three_btn = new DiscordButtonComponent(ButtonStyle.Secondary, answers[2].ToString(), answers[2].ToString());
-                    var answer_correct_btn = new DiscordButtonComponent(ButtonStyle.Secondary, correctAnswer, correctAnswer);
-
-                    var buttons = new DiscordButtonComponent[] { answer_one_btn, answer_two_btn, answer_three_btn, answer_correct_btn };
-                    buttons.Shuffle();
-                    questions.Remove(pickedQuestion!);
-                    var embedBuilder = new EmbedBuilderHelper();
-
-                    var embed = new Embed()
+                    catch (Exception ex)
                     {
-                        Title = "Trivia",
-                        Author = bot.Username,
-                        Desc = $"*{pickedQuestion!.Category}*\r\n**{q}**",
-                        Color = await ShuffleHelper.GetRandomEmbedColorAsync(),
-                        Footer = $"{bot.Username}",
-                        TimeStamp = DateTime.Now,
-                    };
-
-
-                    var messageBuilder = new DiscordMessageBuilder();
-                    messageBuilder.AddComponents(buttons)
-                                    .AddEmbed(embedBuilder.Build(embed));
-
-                    await ctx.Channel.SendMessageAsync(messageBuilder);
-                    _killSwitch.Start();
+                        var message = ex.Message;
+                    }
                 }
+                var index = rnd.Next(0, questions.Count);
+                var pickedQuestion = questions[index];
+                var answers = pickedQuestion.Answers!;
+                correctAnswer = pickedQuestion.CorrectAnswer!;
+                var answerOne = answers[0].ToString();
+                var answerTwo = answers[1].ToString();
+                var answerThree = answers[2].ToString();
+                //answerOne.Replace("&rsquo;", string.Empty).Replace("&#039;", "'").Replace("&quot;", "'");
+                //answerTwo.Replace("&rsquo;", string.Empty).Replace("&#039;", "'").Replace("&quot;", "'");
+                //answerThree.Replace("&rsquo;", string.Empty).Replace("&#039;", "'").Replace("&quot;", "'");
+                //var q = pickedQuestion?._Question!.ToString()?.Replace("&rsquo;", string.Empty).Replace("&#039;", "'").Replace("&quot;", "'");
+                var answer_one_btn = new DiscordButtonComponent(ButtonStyle.Secondary, answers[0].ToString(), answers[0].ToString());
+                var answer_two_btn = new DiscordButtonComponent(ButtonStyle.Secondary, answers[1].ToString(), answers[1].ToString());
+                var answer_three_btn = new DiscordButtonComponent(ButtonStyle.Secondary, answers[2].ToString(), answers[2].ToString());
+                var answer_correct_btn = new DiscordButtonComponent(ButtonStyle.Secondary, correctAnswer, correctAnswer);
+
+                var buttons = new DiscordButtonComponent[] { answer_one_btn, answer_two_btn, answer_three_btn, answer_correct_btn };
+                buttons.Shuffle();
+                questions.Remove(pickedQuestion!);
+                var embedBuilder = new EmbedBuilderHelper();
+
+                var embed = new Embed()
+                {
+                    Title = "Trivia",
+                    Author = bot.Username,
+                    Desc = $"*{pickedQuestion!.Category}*\r\n**{pickedQuestion._Question}**",
+                    Color = await ShuffleHelper.GetRandomEmbedColorAsync(),
+                    Footer = $"{bot.Username}",
+                    TimeStamp = DateTime.Now,
+                };
+
+
+                var messageBuilder = new DiscordMessageBuilder();
+                messageBuilder.AddComponents(buttons)
+                    .AddEmbed(embedBuilder.Build(embed));
+
+                await ctx.Channel.SendMessageAsync(messageBuilder);
+                _killSwitch.Start();
             }
 
             var points = userPoints.Take(1);
@@ -281,6 +279,42 @@ namespace MURDoX.Core.Commands.Games.Trivia
                     count = 1;
                 }
             }
+        }
+        #endregion
+
+        #region LIST CATEGORIES
+        [Command("triviacategories")]
+        [Description("list the categories for the trivia game")]
+        public async Task ListCategories(CommandContext ctx)
+        {
+            var embedBuilder = new EmbedBuilderHelper();
+            var embed = new Embed();
+            var catBuilder = new StringBuilder();
+            var categories = new List<string>
+            {
+                "General Knowledge",
+                "Science and Nature",
+                "Science Computers",
+                "Science Mathematics",
+                "History",
+                "Mythology",
+                "Sports",
+                "Geography",
+                "Art",
+                "Politics"
+            };
+
+            foreach (var cat in categories)
+            {
+                catBuilder.Append($"**{cat}**" + "\r\n");
+            }
+
+            embed = new Embed()
+            {
+                Color = await ShuffleHelper.GetRandomEmbedColorAsync(),
+                Desc = catBuilder.ToString(),
+            };
+            await ctx.Channel.SendMessageAsync(embed: embedBuilder.Build(embed));
         }
         #endregion
 
