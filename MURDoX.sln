@@ -3,13 +3,9 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
 VisualStudioVersion = 17.0.31912.275
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MURDoX.Core", "MURDoX.Core\MURDoX.Core.csproj", "{29EFB3DD-1C51-4A8F-ADCD-D7729D3AE94E}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MURDoX.DiscordAccess", "MURDoX.DiscordAccess\MURDoX.DiscordAccess.csproj", "{60C62B50-3BC0-42E0-98CB-2D3A6DB21C4A}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MURDoX.Data", "MURDoX.Data\MURDoX.Data.csproj", "{E3CBFFB2-082E-488D-A207-6024004616C7}"
-EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MURDoX.Services", "MURDoX.Services\MURDoX.Services.csproj", "{343B7FD2-7B5A-4460-8229-8A1CA1AEC913}"
-EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Benchmarks", "Benchmarks\Benchmarks.csproj", "{2691AA0F-5417-4B11-BA7A-A73EEB044E1D}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MURDoX.Core", "MURDoX.Core\MURDoX.Core.csproj", "{03E9B899-45E4-4246-AABD-31856AAEDEFA}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -17,22 +13,14 @@ Global
 		Release|Any CPU = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
-		{29EFB3DD-1C51-4A8F-ADCD-D7729D3AE94E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{29EFB3DD-1C51-4A8F-ADCD-D7729D3AE94E}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{29EFB3DD-1C51-4A8F-ADCD-D7729D3AE94E}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{29EFB3DD-1C51-4A8F-ADCD-D7729D3AE94E}.Release|Any CPU.Build.0 = Release|Any CPU
-		{E3CBFFB2-082E-488D-A207-6024004616C7}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{E3CBFFB2-082E-488D-A207-6024004616C7}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{E3CBFFB2-082E-488D-A207-6024004616C7}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{E3CBFFB2-082E-488D-A207-6024004616C7}.Release|Any CPU.Build.0 = Release|Any CPU
-		{343B7FD2-7B5A-4460-8229-8A1CA1AEC913}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{343B7FD2-7B5A-4460-8229-8A1CA1AEC913}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{343B7FD2-7B5A-4460-8229-8A1CA1AEC913}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{343B7FD2-7B5A-4460-8229-8A1CA1AEC913}.Release|Any CPU.Build.0 = Release|Any CPU
-		{2691AA0F-5417-4B11-BA7A-A73EEB044E1D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{2691AA0F-5417-4B11-BA7A-A73EEB044E1D}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{2691AA0F-5417-4B11-BA7A-A73EEB044E1D}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{2691AA0F-5417-4B11-BA7A-A73EEB044E1D}.Release|Any CPU.Build.0 = Release|Any CPU
+		{60C62B50-3BC0-42E0-98CB-2D3A6DB21C4A}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{60C62B50-3BC0-42E0-98CB-2D3A6DB21C4A}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{60C62B50-3BC0-42E0-98CB-2D3A6DB21C4A}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{60C62B50-3BC0-42E0-98CB-2D3A6DB21C4A}.Release|Any CPU.Build.0 = Release|Any CPU
+		{03E9B899-45E4-4246-AABD-31856AAEDEFA}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{03E9B899-45E4-4246-AABD-31856AAEDEFA}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{03E9B899-45E4-4246-AABD-31856AAEDEFA}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{03E9B899-45E4-4246-AABD-31856AAEDEFA}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

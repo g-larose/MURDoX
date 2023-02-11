@@ -1,0 +1,32 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+    <PropertyGroup>
+        <OutputType>Exe</OutputType>
+        <TargetFramework>net7.0</TargetFramework>
+        <ImplicitUsings>enable</ImplicitUsings>
+        <Nullable>enable</Nullable>
+    </PropertyGroup>
+
+    <ItemGroup>
+      <Folder Include="Commands\EventHandlers" />
+      <Folder Include="Commands\SlashCommands" />
+      <Folder Include="Commands\TextCommands" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <PackageReference Include="DSharpPlus" Version="4.3.0" />
+      <PackageReference Include="DSharpPlus.CommandsNext" Version="4.3.0" />
+      <PackageReference Include="DSharpPlus.Interactivity" Version="4.3.0" />
+      <PackageReference Include="DSharpPlus.SlashCommands" Version="4.3.0" />
+      <PackageReference Include="Microsoft.EntityFrameworkCore" Version="7.0.2" />
+      <PackageReference Include="Microsoft.Extensions.Configuration" Version="7.0.0" />
+      <PackageReference Include="Microsoft.Extensions.Configuration.Json" Version="7.0.0" />
+      <PackageReference Include="Npgsql" Version="7.0.1" />
+      <PackageReference Include="Npgsql.EntityFrameworkCore.PostgreSQL" Version="7.0.1" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <ProjectReference Include="..\MURDoX.Core\MURDoX.Core.csproj" />
+    </ItemGroup>
+
+</Project>
