@@ -1,25 +1,19 @@
 ﻿using MURDoX.Core.Models;
 using Newtonsoft.Json;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using MURDoX.Core.Models;
 
-namespace MURDoX.Services.Helpers
+namespace MURDoX.Core.Helpers
 {
     public class FactHelper
     {
         public static async Task<Fact> GetRandomFact()
         {
             string factJson = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Assets", "fact.json");
-            Random rnd = new Random();
+            Random rnd = new();
             
-            var facts = await File.ReadAllTextAsync(factJson);
-            var factList = JsonConvert.DeserializeObject<List<Fact>>(facts);
+            string facts = await File.ReadAllTextAsync(factJson);
+            List<Fact>? factList = JsonConvert.DeserializeObject<List<Fact>>(facts);
             int index = rnd.Next(0, factList!.Count);
-            var fact = factList[index];
+            Fact fact = factList[index];
             fact.Content = UtilityHelper.Sanitize(fact.Content);
 
             return fact;

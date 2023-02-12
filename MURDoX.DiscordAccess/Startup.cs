@@ -15,6 +15,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using MURDoX.Core.Data;
 using MURDoX.Core.Enums;
+using MURDoX.Core.Services;
 using MURDoX.DiscordAccess.Commands.EventHandlers;
 
 #endregion
@@ -68,7 +69,8 @@ namespace MURDoX.DiscordAccess
                 .AddPooledDbContextFactory<ApplicationDbContext>(options =>
                 {
                     options.UseNpgsql(Configuration?.GetConnectionString("DefaultConnection"));
-                });
+                })
+                .AddSingleton<WelcomeService>();
             return Task.CompletedTask;
         }
 

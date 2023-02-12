@@ -1,8 +1,9 @@
-﻿namespace MURDoX.Core.Models;
-
-public class EmbedField
+﻿namespace MURDoX.Core.Models
 {
-    public string? Name { get; set; }
-    public string? Value { get; set; }
-    public bool Inline { get; set; }
+    public class EmbedField
+    {
+        public string? Name { get; set; }
+        public string? Value { get; set; }
+        public bool Inline { get; set; }
+    }
 }

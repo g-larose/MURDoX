@@ -1,16 +1,7 @@
-﻿using MURDoX.Core;
-using MURDoX.Core.Models;
+﻿using MURDoX.Core.Models;
 using Newtonsoft.Json;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Net;
-using System.Text;
-using System.Text.RegularExpressions;
-using System.Threading.Tasks;
-using MURDoX.Core.Models;
 
-namespace MURDoX.Services.Helpers
+namespace MURDoX.Core.Helpers
 {
     public class TriviaHttpHelper
     {
@@ -20,7 +11,7 @@ namespace MURDoX.Services.Helpers
             List<Question> Questions = new();
 
             if (quests == null) return Questions;
-            foreach (var quest in quests["results"])
+            foreach (dynamic? quest in quests["results"])
             {
                 Question question = new();
                 question.Category = quest.category;
@@ -36,9 +27,9 @@ namespace MURDoX.Services.Helpers
 
         public static async Task<string> MakeQuestionRequest(string category, string difficulty)
         {
-            var cat = ConverterHelper.ConvertCategoryString(category);
-            var EndPoint = $"https://opentdb.com/api.php?amount=10&category={cat}&difficulty={difficulty}&type=multiple";
-            HttpClient request = new HttpClient();
+            string cat = ConverterHelper.ConvertCategoryString(category);
+            string EndPoint = $"https://opentdb.com/api.php?amount=10&category={cat}&difficulty={difficulty}&type=multiple";
+            HttpClient request = new();
 
             HttpResponseMessage response = await request.GetAsync(EndPoint);
             string content = await response.Content.ReadAsStringAsync();

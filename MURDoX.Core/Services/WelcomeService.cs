@@ -1,10 +1,12 @@
-﻿namespace DefaultNamespace;
-public class WelcomerService
+﻿using DSharpPlus.Entities;
+using MURDoX.Core.Models.Utility.WelcomeService;
+
+namespace MURDoX.Core.Services
 {
-    public static string GetWelcomeMsg(DiscordUser user)
+    public class WelcomeService
     {
-        var rnd = new Random();
-        List<stirng> welcomeMsgList = new List<stirng>()
+        Random _rnd = new();
+        List<string> _welcomeMsgList = new()
         {
             "A very warm welcome to you! It is lovely to have you among us!",
             "It is an honor to have such a hardworking individual like you to join us! Welcome!",
@@ -49,8 +51,15 @@ public class WelcomerService
             "User has joined. Stay a while and listen!",
             "Roses are red, violets are blue, User joined this server with you",
         };
-        var index = rnd.Next(welcomeMsgList.Count());
-        var msg = welcomeMsgList[index].Replace("User", user.Username);
-        return msg;
+        public Task<WelcomeServiceResponse> GetWelcomeMessage(WelcomeServiceInput input)
+        {
+            int index = _rnd.Next(_welcomeMsgList.Count);
+            string message = _welcomeMsgList[index].Replace("User", input.Username);
+            
+            return Task.FromResult(new WelcomeServiceResponse
+            {
+                Message = message
+            });
+        }
     }
 }

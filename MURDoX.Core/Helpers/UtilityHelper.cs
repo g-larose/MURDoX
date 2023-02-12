@@ -1,9 +1,9 @@
-﻿using MURDoX.Core.Models;
-using System.Diagnostics;
+﻿using System.Diagnostics;
 using System.Text.RegularExpressions;
 using MURDoX.Core.Data;
+using MURDoX.Core.Models;
 
-namespace MURDoX.Services.Helpers
+namespace MURDoX.Core.Helpers
 {
     public class UtilityHelper
     {
@@ -20,7 +20,7 @@ namespace MURDoX.Services.Helpers
         public static int[] MakeRoll(int numDice, int sides)
         {
             int[] numbers = new int[numDice];
-            var rnd = new Random();
+            Random rnd = new();
 
             for (int i = 0; i < numDice; i++)
             { 
@@ -34,9 +34,9 @@ namespace MURDoX.Services.Helpers
         #region TUPLE(INT, LIST<INT>) ROLL
         public static (int, List<int>) Roll(int numDice, int sides)
         {
-            var nums = new List<int>();
-            var result = (numDice, nums);
-            var rnd = new Random(Environment.TickCount);
+            List<int> nums = new List<int>();
+            (int numDice, List<int> nums) result = (numDice, nums);
+            Random rnd = new(Environment.TickCount);
             for (int i = 0; i < numDice; i++)
             {
                result.Item2.Add(rnd.Next(1, sides + 1));
@@ -49,9 +49,9 @@ namespace MURDoX.Services.Helpers
         #region DICTIONARY<INT, LIST<INT>> DOROLL
         public static Dictionary<int, List<int>> DoRoll(int numDice, int sides)
         {
-            Dictionary<int, List<int>> result = new Dictionary<int, List<int>>();
+            Dictionary<int, List<int>> result = new();
             List<int> numbers = new List<int>();
-            var rnd = new Random();
+            Random rnd = new();
 
             for (int i = 0; i < sides; i++)
             {
@@ -66,7 +66,7 @@ namespace MURDoX.Services.Helpers
         #region IS VALID USER
         public bool IsValidUser(ulong id)
         {
-            var user = _db.Users!.Where(x => x.DiscordId == id).FirstOrDefault();
+            ServerMember? user = _db.Users!.Where(x => x.DiscordId == id).FirstOrDefault();
 
             if (user != null)
                 return true;
@@ -92,7 +92,7 @@ namespace MURDoX.Services.Helpers
         #region GET DATABASE LATENCY
         public int GetDbLatency()
         {
-            var sw = Stopwatch.StartNew();
+            Stopwatch sw = Stopwatch.StartNew();
             _db.Users!.FirstOrDefault(x => x.Username == "Async(void)");
             sw.Stop();
             return (int)sw.ElapsedMilliseconds;
@@ -116,7 +116,7 @@ namespace MURDoX.Services.Helpers
         /// <returns>string</returns>
         public static string Sanitize(string content)
         {
-            Regex matches = new Regex("(&#?[a-zA-Z0-9]+;)");
+            Regex matches = new("(&#?[a-zA-Z0-9]+;)");
             string output = matches.Replace(content, "");
 
             return output;
