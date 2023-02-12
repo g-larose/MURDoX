@@ -4,6 +4,7 @@ using System.Reflection;
 using DSharpPlus;
 using DSharpPlus.CommandsNext;
 using DSharpPlus.Entities;
+using DSharpPlus.EventArgs;
 using DSharpPlus.Interactivity;
 using DSharpPlus.Interactivity.Enums;
 using DSharpPlus.Interactivity.EventHandling;
@@ -13,6 +14,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using MURDoX.Core.Data;
+using MURDoX.Core.Enums;
 
 #endregion
 
@@ -45,6 +47,8 @@ namespace MURDoX.DiscordAccess
             
             //for testing purposes only.... so we know we connected successfully!
             Console.WriteLine("MURDoX has connected!");
+           
+            
             await Task.Delay(-1);
         }
 
@@ -126,7 +130,25 @@ namespace MURDoX.DiscordAccess
 
         private Task ConfigureBotEvents()
         {
+            DiscordClient.MessageCreated += OnMessageCreated;
+            DiscordClient.MessageDeleted += OnMessageDeleted;
+            DiscordClient.GuildMemberAdded += OnGuildMemberAdded;
             return DiscordClient == null ? Task.FromException(new NullReferenceException()) : Task.CompletedTask;
+        }
+
+        private async Task OnMessageCreated(DiscordClient sender, MessageCreateEventArgs e)
+        {
+            
+        }
+
+        private async Task OnMessageDeleted(DiscordClient sender, MessageDeleteEventArgs e)
+        {
+            
+        }
+
+        private async Task OnGuildMemberAdded(DiscordClient sender, GuildMemberAddEventArgs e)
+        {
+            
         }
     }
 }
