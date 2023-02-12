@@ -15,6 +15,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using MURDoX.Core.Data;
 using MURDoX.Core.Enums;
+using MURDoX.DiscordAccess.Commands.EventHandlers;
 
 #endregion
 
@@ -130,25 +131,19 @@ namespace MURDoX.DiscordAccess
 
         private Task ConfigureBotEvents()
         {
-            DiscordClient.MessageCreated += OnMessageCreated;
-            DiscordClient.MessageDeleted += OnMessageDeleted;
-            DiscordClient.GuildMemberAdded += OnGuildMemberAdded;
-            return DiscordClient == null ? Task.FromException(new NullReferenceException()) : Task.CompletedTask;
-        }
-
-        private async Task OnMessageCreated(DiscordClient sender, MessageCreateEventArgs e)
-        {
+            if (DiscordClient == null)
+            {
+                return Task.FromException(new NullReferenceException());
+            }
             
-        }
-
-        private async Task OnMessageDeleted(DiscordClient sender, MessageDeleteEventArgs e)
-        {
+            OnMessageCreatedEventListener onMessageCreatedEventListener = new();
+            OnMessageDeletedEventListener onMessageDeletedEventListener = new();
+            OnGuildMemberAddedEventListener onGuildMemberAddedEventListener = new();
             
-        }
-
-        private async Task OnGuildMemberAdded(DiscordClient sender, GuildMemberAddEventArgs e)
-        {
-            
+            DiscordClient.MessageCreated += onMessageCreatedEventListener.OnMessageCreated;
+            DiscordClient.MessageDeleted += onMessageDeletedEventListener.OnMessageDeleted;
+            DiscordClient.GuildMemberAdded += onGuildMemberAddedEventListener.OnGuildMemberAdded;
+            return Task.CompletedTask;
         }
     }
 }

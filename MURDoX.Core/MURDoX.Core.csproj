@@ -13,7 +13,6 @@
     </ItemGroup>
 
     <ItemGroup>
-      <Folder Include="Commands\Eval" />
       <Folder Include="Interfaces" />
       <Folder Include="Migrations" />
       <Folder Include="Services" />

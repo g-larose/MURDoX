@@ -8,7 +8,6 @@
     </PropertyGroup>
 
     <ItemGroup>
-      <Folder Include="Commands\EventHandlers" />
       <Folder Include="Commands\SlashCommands" />
       <Folder Include="Commands\TextCommands" />
     </ItemGroup>
