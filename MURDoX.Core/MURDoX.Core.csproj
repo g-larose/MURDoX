@@ -7,15 +7,28 @@
     </PropertyGroup>
 
     <ItemGroup>
+      <PackageReference Include="DSharpPlus.CommandsNext" Version="4.3.0" />
       <PackageReference Include="Microsoft.EntityFrameworkCore" Version="7.0.2" />
+      <PackageReference Include="Newtonsoft.Json" Version="13.0.2" />
     </ItemGroup>
 
     <ItemGroup>
-      <Folder Include="Helpers" />
+      <Folder Include="Commands\Eval" />
       <Folder Include="Interfaces" />
       <Folder Include="Migrations" />
-      <Folder Include="Models" />
       <Folder Include="Services" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <Compile Include="C:\Users\glaro\OneDrive\Desktop\Temp\FactHelper.cs">
+        <Link>Helpers\FactHelper.cs</Link>
+      </Compile>
+      <Compile Include="C:\Users\glaro\OneDrive\Desktop\Temp\TriviaHttpHelper.cs">
+        <Link>Helpers\TriviaHttpHelper.cs</Link>
+      </Compile>
+      <Compile Include="C:\Users\glaro\OneDrive\Desktop\Temp\UtilityHelper.cs">
+        <Link>Helpers\UtilityHelper.cs</Link>
+      </Compile>
     </ItemGroup>
 
 </Project>

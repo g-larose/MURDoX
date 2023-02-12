@@ -42,13 +42,16 @@ namespace MURDoX.DiscordAccess
                 throw new NullReferenceException();
             }
             await DiscordClient.ConnectAsync();
+            
+            //for testing purposes only.... so we know we connected successfully!
+            Console.WriteLine("MURDoX has connected!");
             await Task.Delay(-1);
         }
 
         private Task ConfigureConfiguration()
         {
             Configuration = new ConfigurationBuilder()
-                .AddJsonFile("appsetting.json", false, true)
+                .AddJsonFile("appsettings.json", false, true)
                 .Build();
 
             return Task.CompletedTask;
@@ -76,7 +79,7 @@ namespace MURDoX.DiscordAccess
             Commands = DiscordClient?.UseCommandsNext(new CommandsNextConfiguration
             {
                 StringPrefixes = new[] { "!", "$" },
-                EnableDms = false,
+                EnableDms = true,
                 EnableMentionPrefix = true,
                 Services = serviceProvider
             });
