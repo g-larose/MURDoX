@@ -18,16 +18,4 @@
       <Folder Include="Services" />
     </ItemGroup>
 
-    <ItemGroup>
-      <Compile Include="C:\Users\glaro\OneDrive\Desktop\Temp\FactHelper.cs">
-        <Link>Helpers\FactHelper.cs</Link>
-      </Compile>
-      <Compile Include="C:\Users\glaro\OneDrive\Desktop\Temp\TriviaHttpHelper.cs">
-        <Link>Helpers\TriviaHttpHelper.cs</Link>
-      </Compile>
-      <Compile Include="C:\Users\glaro\OneDrive\Desktop\Temp\UtilityHelper.cs">
-        <Link>Helpers\UtilityHelper.cs</Link>
-      </Compile>
-    </ItemGroup>
-
 </Project>
