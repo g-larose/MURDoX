@@ -1,4 +1,5 @@
 ﻿using DSharpPlus;
+using DSharpPlus.Entities;
 using DSharpPlus.EventArgs;
 
 namespace MURDoX.DiscordAccess.Commands.EventHandlers
@@ -7,6 +8,9 @@ namespace MURDoX.DiscordAccess.Commands.EventHandlers
     {
         internal Task OnGuildMemberAdded(DiscordClient sender, GuildMemberAddEventArgs e)
         {
+            ulong userId = e.Member.Id;
+            var currentGuild = e.Guild;
+            
             return Task.CompletedTask;
         }
     }
