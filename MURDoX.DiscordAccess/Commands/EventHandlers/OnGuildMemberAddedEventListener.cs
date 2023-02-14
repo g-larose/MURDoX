@@ -1,31 +1,43 @@
-﻿using DSharpPlus;
-using DSharpPlus.EventArgs;
-using MURDoX.Core.Helpers;
-using MURDoX.Core.Models;
-using MURDoX.Core.Models.Utility.WelcomeService;
+﻿using MURDoX.Core.Models.Utility.WelcomeService;
 using MURDoX.Core.Services;
+using Remora.Discord.API.Abstractions.Gateway.Events;
+using Remora.Discord.API.Abstractions.Objects;
+using Remora.Discord.API.Abstractions.Rest;
+using Remora.Discord.Gateway.Responders;
+using Remora.Rest.Core;
+using Remora.Results;
 
 namespace MURDoX.DiscordAccess.Commands.EventHandlers
 {
-    public class OnGuildMemberAddedEventListener
+    public class OnGuildMemberAddedEventListener : IResponder<IGuildMemberAdd>
     {
-        internal async Task OnGuildMemberAdded(DiscordClient sender, GuildMemberAddEventArgs e)
+        private readonly WelcomeService _welcomeService;
+        private readonly IDiscordRestChannelAPI _discordRestChannelApi;
+        private readonly IDiscordRestUserAPI _discordRestUserApi;
+        public OnGuildMemberAddedEventListener(WelcomeService welcomeService,IDiscordRestChannelAPI discordRestChannelApi ,IDiscordRestUserAPI discordRestUserApi)
         {
-            EmbedBuilderHelper embedBuilder = new();
-            WelcomeService welcomeService = new();
-            WelcomeServiceInput welcomeServiceInput = new()
+            _welcomeService = welcomeService;
+            _discordRestChannelApi = discordRestChannelApi;
+            _discordRestUserApi = discordRestUserApi;
+        }
+        public async Task<Result> RespondAsync(IGuildMemberAdd gatewayEvent, CancellationToken ct = new())
+        {
+            WelcomeServiceResponse welcomeServiceResponse = await _welcomeService.GetWelcomeMessage(new WelcomeServiceInput
             {
-                Username = e.Member.Username
-            };
-            WelcomeServiceResponse response = welcomeService.GetWelcomeMessage(welcomeServiceInput).Result;
-            Embed embed = new Embed()
+                Username = gatewayEvent.User.Value.Username
+            });
+            
+            Result<IChannel> result = await _discordRestUserApi.CreateDMAsync(new Snowflake(gatewayEvent.User.Value.ID.Value), ct);
+            
+            if (!result.IsSuccess)
             {
-                Title = $"{e.Member.Username} welcome to {e.Guild.Name}",
-                Color = await ShuffleHelper.GetRandomEmbedColorAsync(),
-                Desc = $"{response.Message}"
-            };
-            await e.Guild.GetDefaultChannel().SendMessageAsync(response.Message);
-            await e.Member.SendMessageAsync(embed: embedBuilder.Build(embed));
+                return Result.FromError(result);
+            }
+            
+            string message = welcomeServiceResponse.Message ?? throw new InvalidOperationException("Message is null");
+            Result<IMessage> messageResult = await _discordRestChannelApi.CreateMessageAsync(result.Entity.ID, message, ct: ct);
+            
+            return !messageResult.IsSuccess ? Result.FromError(messageResult) : Result.FromSuccess();
         }
     }
 }

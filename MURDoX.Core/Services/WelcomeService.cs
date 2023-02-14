@@ -1,5 +1,4 @@
-﻿using DSharpPlus.Entities;
-using MURDoX.Core.Models.Utility.WelcomeService;
+﻿using MURDoX.Core.Models.Utility.WelcomeService;
 
 namespace MURDoX.Core.Services
 {
