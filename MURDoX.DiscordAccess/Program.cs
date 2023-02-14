@@ -1,11 +1,12 @@
-﻿namespace MURDoX.DiscordAccess
+﻿using MURDoX.DiscordAccess;
+
+namespace MURDoX.DiscordAccess
 {
-    public static class Program
+    internal class Program
     {
         public static async Task Main(string[] args)
         {
-            Startup startup = new();
-            await startup.RunAsync();
+            await Startup.RunAsync();
         }
     }
 }

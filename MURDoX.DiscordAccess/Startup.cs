@@ -1,151 +1,71 @@
-﻿#region
-
-using System.Reflection;
-using DSharpPlus;
-using DSharpPlus.CommandsNext;
-using DSharpPlus.Entities;
-using DSharpPlus.EventArgs;
-using DSharpPlus.Interactivity;
-using DSharpPlus.Interactivity.Enums;
-using DSharpPlus.Interactivity.EventHandling;
-using DSharpPlus.Interactivity.Extensions;
-using DSharpPlus.SlashCommands;
-using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Configuration;
+﻿using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using MURDoX.Core.Data;
-using MURDoX.Core.Enums;
-using MURDoX.Core.Services;
+using Microsoft.Extensions.Logging;
 using MURDoX.DiscordAccess.Commands.EventHandlers;
-
-#endregion
-
-// Following line is required for Rider to disable the warning about unused private fields
-// ReSharper disable UnusedAutoPropertyAccessor.Local
+using Remora.Discord.API.Abstractions.Gateway.Commands;
+using Remora.Discord.Gateway;
+using Remora.Discord.Gateway.Extensions;
+using Remora.Discord.Gateway.Results;
+using Remora.Results;
 
 namespace MURDoX.DiscordAccess
 {
-    public class Startup
+    public static class Startup
     {
-        private IConfiguration? Configuration { get; set; }
-        private IServiceCollection? Services { get; set; }
-        private SlashCommandsExtension? SlashCommands { get; set; }
-        private CommandsNextExtension? Commands { get; set; }
-        private InteractivityExtension? Interactivity { get; set; }
-        private DiscordClient? DiscordClient { get; set; }
-
-        public async Task RunAsync()
+        public static async Task RunAsync()
         {
-            await ConfigureConfiguration();
-            await ConfigureServices();
-            await ConfigureBot();
-            await ConfigureBotEvents();
-
-            if (DiscordClient is null)
+            CancellationTokenSource cancellationSource = new();
+            Console.CancelKeyPress += (_, eventArgs) =>
             {
-                throw new NullReferenceException();
-            }
-            await DiscordClient.ConnectAsync();
+                eventArgs.Cancel = true;
+                cancellationSource.Cancel();
+            };
             
-            //for testing purposes only.... so we know we connected successfully!
-            Console.WriteLine("MURDoX has connected!");
-           
-            
-            await Task.Delay(-1);
-        }
-
-        private Task ConfigureConfiguration()
-        {
-            Configuration = new ConfigurationBuilder()
+            IConfigurationRoot configuration = new ConfigurationBuilder()
                 .AddJsonFile("appsettings.json", false, true)
                 .Build();
+            
+            ServiceProvider services = new ServiceCollection()
+                .AddDiscordGateway(_ => configuration.GetSection("DiscordToken")["Token"] ?? throw new InvalidOperationException("Token is null"))
+                .Configure<DiscordGatewayClientOptions>(g => g.Intents |= GatewayIntents.MessageContents)
+                .BuildServiceProvider();
 
-            return Task.CompletedTask;
-        }
+            Console.WriteLine("Connected");
+            DiscordGatewayClient gatewayClient = services.GetRequiredService<DiscordGatewayClient>();
+            ILogger<Program> log = services.GetRequiredService<ILogger<Program>>();
 
-        private Task ConfigureServices()
-        {
-            Services = new ServiceCollection()
-                .AddPooledDbContextFactory<ApplicationDbContext>(options =>
+            Result runResult = await gatewayClient.RunAsync(cancellationSource.Token);
+
+            if (!runResult.IsSuccess)
+            {
+                switch (runResult.Error)
                 {
-                    options.UseNpgsql(Configuration?.GetConnectionString("DefaultConnection"));
-                })
-                .AddSingleton<WelcomeService>();
-            return Task.CompletedTask;
-        }
+                    case ExceptionError exe:
+                    {
+                        log.LogError
+                        (
+                            exe.Exception,
+                            "Exception during gateway connection: {ExceptionMessage}",
+                            exe.Message
+                        );
 
-        private Task ConfigureBot()
-        {
-            ServiceProvider serviceProvider = Services?.BuildServiceProvider() ?? throw new NullReferenceException();
-            DiscordClient = new DiscordClient(new DiscordConfiguration
-            {
-                Token = Configuration?.GetSection("DiscordToken")["Token"],
-                TokenType = TokenType.Bot,
-                Intents = DiscordIntents.All
-            });
-            Commands = DiscordClient?.UseCommandsNext(new CommandsNextConfiguration
-            {
-                StringPrefixes = new[] { "!", "$" },
-                EnableDms = true,
-                EnableMentionPrefix = true,
-                Services = serviceProvider
-            });
-            Commands?.RegisterCommands(Assembly.GetExecutingAssembly());
-            Interactivity = DiscordClient?.UseInteractivity(new InteractivityConfiguration
-            {
-                Timeout = TimeSpan.FromSeconds(30),
-                PollBehaviour = PollBehaviour.KeepEmojis,
-                PaginationBehaviour = PaginationBehaviour.WrapAround,
-                AckPaginationButtons = true,
-                ButtonBehavior = ButtonPaginationBehavior.Disable,
-                PaginationDeletion = PaginationDeletion.DeleteEmojis,
-                PaginationEmojis = new PaginationEmojis
-                {
-                    Left = DiscordEmoji.FromName(DiscordClient, ":arrow_backward:"),
-                    Right = DiscordEmoji.FromName(DiscordClient, ":arrow_forward:"),
-                    SkipLeft = DiscordEmoji.FromName(DiscordClient, ":track_previous:"),
-                    SkipRight = DiscordEmoji.FromName(DiscordClient, ":track_next:"),
-                    Stop = DiscordEmoji.FromName(DiscordClient, ":stop_button:")
-                },
-                PaginationButtons = new PaginationButtons
-                {
-                    Left = new DiscordButtonComponent(ButtonStyle.Primary, "left", "Left", false,
-                        new DiscordComponentEmoji(DiscordEmoji.FromName(DiscordClient, ":arrow_backward:"))),
-                    Right = new DiscordButtonComponent(ButtonStyle.Primary, "right", "Right", false,
-                        new DiscordComponentEmoji(DiscordEmoji.FromName(DiscordClient, ":arrow_forward:"))),
-                    SkipLeft = new DiscordButtonComponent(ButtonStyle.Primary, "skip_left", "Skip Left", false,
-                        new DiscordComponentEmoji(DiscordEmoji.FromName(DiscordClient, ":track_previous:"))),
-                    SkipRight = new DiscordButtonComponent(ButtonStyle.Primary, "skip_right", "Skip Right", false,
-                        new DiscordComponentEmoji(DiscordEmoji.FromName(DiscordClient, ":track_next:"))),
-                    Stop = new DiscordButtonComponent(ButtonStyle.Primary, "stop", "Stop", false,
-                        new DiscordComponentEmoji(DiscordEmoji.FromName(DiscordClient, ":stop_button:")))
-                },
-                ResponseBehavior = InteractionResponseBehavior.Respond,
-                ResponseMessage = "This message is not used"
-            });
-            SlashCommands = DiscordClient?.UseSlashCommands(new SlashCommandsConfiguration
-            {
-                Services = serviceProvider
-            }); 
-            SlashCommands?.RegisterCommands(Assembly.GetExecutingAssembly());
-            return Task.CompletedTask;
-        }
-
-        private Task ConfigureBotEvents()
-        {
-            if (DiscordClient == null)
-            {
-                return Task.FromException(new NullReferenceException());
+                        break;
+                    }
+                    case GatewayWebSocketError:
+                    case GatewayDiscordError:
+                    {
+                        log.LogError("Gateway error: {Message}", runResult.Error.Message);
+                        break;
+                    }
+                    default:
+                    {
+                        log.LogError("Unknown error: {Message}", runResult.Error.Message);
+                        break;
+                    }
+                }
             }
-            
-            OnMessageCreatedEventListener onMessageCreatedEventListener = new();
-            OnMessageDeletedEventListener onMessageDeletedEventListener = new();
-            OnGuildMemberAddedEventListener onGuildMemberAddedEventListener = new();
-            
-            DiscordClient.MessageCreated += onMessageCreatedEventListener.OnMessageCreated;
-            DiscordClient.MessageDeleted += onMessageDeletedEventListener.OnMessageDeleted;
-            DiscordClient.GuildMemberAdded += onGuildMemberAddedEventListener.OnGuildMemberAdded;
-            return Task.CompletedTask;
+
+            Console.WriteLine("Bye bye");
         }
     }
 }
