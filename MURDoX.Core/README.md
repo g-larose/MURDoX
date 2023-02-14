@@ -22,6 +22,6 @@
 
 # Refactor Code
 
-* [ ] Clean the codebase
+* [x] Clean the codebase
 
 

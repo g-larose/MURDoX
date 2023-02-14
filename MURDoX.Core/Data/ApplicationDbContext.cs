@@ -1,6 +1,7 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using MURDoX.Core.Models;
+using MURDoX.Core.Models.Utility.SuggestionService;
 
 namespace MURDoX.Core.Data
 {

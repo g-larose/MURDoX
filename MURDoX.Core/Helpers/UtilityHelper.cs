@@ -2,6 +2,7 @@
 using System.Text.RegularExpressions;
 using MURDoX.Core.Data;
 using MURDoX.Core.Models;
+using MURDoX.Core.Models.Utility.SuggestionService;
 
 namespace MURDoX.Core.Helpers
 {

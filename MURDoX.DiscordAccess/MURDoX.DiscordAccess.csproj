@@ -9,7 +9,6 @@
 
     <ItemGroup>
       <Folder Include="Commands\SlashCommands" />
-      <Folder Include="Commands\TextCommands" />
     </ItemGroup>
 
     <ItemGroup>
