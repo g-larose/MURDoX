@@ -4,7 +4,7 @@
     {
         public Guid Id { get; set; }
         public string? Name { get; set; }
-        public string? Discription { get; set; }
+        public string? Description { get; set; }
         public ulong AuthorId { get; set; }
         public DateTime Created { get; set; }
     }
