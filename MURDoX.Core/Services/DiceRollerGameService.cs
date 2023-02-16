@@ -11,29 +11,25 @@ public class DiceRollerGameService
 {
     private readonly ApplicationDbContext _db;
     private DiceRollerInput _input;
-    private System.Timers.Timer timer;
-    private double timerSeconds;
-    
     public DiceRollerGameService(ApplicationDbContext db)
     {
         _db = db;
-        timer = new System.Timers.Timer(1000);
-        timer.Elapsed += OnTimerEvent;
-        timer.Enabled = true;
     }
-
-    private void OnTimerEvent(object? sender, ElapsedEventArgs e)
-    {
-        //this is where we check to see if the time elapsed matches the duration set in the command.
-        timerSeconds++;
-        if (timerSeconds >= _input.Duration.Seconds)
-            DoRoll(_input);
-    }
-
-    public async Task<DiceRollerResponse> DoRoll(DiceRollerInput input)
+    public async Task<DiceRollerResponse> DoRollAsync(DiceRollerInput input)
     {
         _input = input;
-        timer.Start();
-        return new DiceRollerResponse(); //this is just to get rid of the error.
+        DiceRollerResponse response = new DiceRollerResponse();
+        var rnd = new Random();
+        
+        for (int i = 0; i < input.Dice; i++)
+        {
+            response.DiceResults.Add(new ValueTuple<string, int>(input.Players[0], rnd.Next(1, input.Sides)));
+            response.DiceResults.Add(new ValueTuple<string, int>(input.Players[1], rnd.Next(1, input.Sides)));
+        }
+
+        response.Dice = input.Dice;
+        response.Sides = input.Sides;
+
+        return response;
     }
 }

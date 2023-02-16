@@ -34,12 +34,13 @@ public class DiceRollerCommandGroup : CommandGroup
         var players = new List<string>();
         players.Add(_context.Message.Author.Value.Username);
         players.Add(user);
-        DiceRollerResponse response = await _diceGameService.DoRoll(new DiceRollerInput()
+        DiceRollerResponse response = await _diceGameService.DoRollAsync(new DiceRollerInput
         {
             Players = players,
             Dice = _dice,
             Sides = _sides,
         });
-        return Result.FromSuccess();//this is just to get rid of the error.
+        var result = await _channels.CreateMessageAsync(_context.Message.ChannelID.Value, response.Dice.ToString());
+        return !result.IsSuccess ? Result.FromError(result) : Result.FromSuccess();
     }
 }
