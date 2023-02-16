@@ -5,7 +5,8 @@ namespace MURDoX.Core.Services
     public class WelcomeService
     {
         Random _rnd = new();
-        List<string> _welcomeMsgList = new()
+
+        readonly List<string> _welcomeMsgList = new()
         {
             "A very warm welcome to you! It is lovely to have you among us!",
             "It is an honor to have such a hardworking individual like you to join us! Welcome!",
