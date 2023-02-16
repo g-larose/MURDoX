@@ -18,7 +18,7 @@ namespace MURDoX.Core.Services
             {
                 Id = Guid.NewGuid(),
                 Name = suggestionServiceInput.Name,
-                Discription = suggestionServiceInput.Description,
+                Description = suggestionServiceInput.Description,
                 AuthorId = suggestionServiceInput.AuthorId,
                 Created = DateTime.Now
             };
@@ -39,7 +39,7 @@ namespace MURDoX.Core.Services
             {
                 Id = suggestion.Id,
                 Name = suggestion.Name,
-                Description = suggestion.Discription
+                Description = suggestion.Description
             };
 
         }
