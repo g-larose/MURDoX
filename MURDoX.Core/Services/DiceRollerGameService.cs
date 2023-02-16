@@ -1,7 +1,9 @@
 ﻿using System.Diagnostics;
 using MURDoX.Core.Data;
 using System.Timers;
+using Microsoft.EntityFrameworkCore.Query;
 using MURDoX.Core.Models.Games;
+using Remora.Results;
 
 namespace MURDoX.Core.Services;
 
@@ -12,10 +14,9 @@ public class DiceRollerGameService
     private System.Timers.Timer timer;
     private double timerSeconds;
     
-    public DiceRollerGameService(ApplicationDbContext db, DiceRollerInput input)
+    public DiceRollerGameService(ApplicationDbContext db)
     {
         _db = db;
-        _input = input;
         timer = new System.Timers.Timer(1000);
         timer.Elapsed += OnTimerEvent;
         timer.Enabled = true;
@@ -25,10 +26,14 @@ public class DiceRollerGameService
     {
         //this is where we check to see if the time elapsed matches the duration set in the command.
         timerSeconds++;
-
         if (timerSeconds >= _input.Duration.Seconds)
-        {
-            //the duration has expired , send a dice embed to the channel and reset timerSeconds.
-        }
+            DoRoll(_input);
+    }
+
+    public async Task<DiceRollerResponse> DoRoll(DiceRollerInput input)
+    {
+        _input = input;
+        timer.Start();
+        return new DiceRollerResponse(); //this is just to get rid of the error.
     }
 }
