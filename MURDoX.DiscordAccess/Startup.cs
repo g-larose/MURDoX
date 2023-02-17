@@ -2,8 +2,11 @@
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using MURDoX.Core.Services;
-using MURDoX.DiscordAccess.Commands.EventHandlers;
+using MURDoX.DiscordAccess.Commands.TextCommands;
+using Remora.Commands.Extensions;
 using Remora.Discord.API.Abstractions.Gateway.Commands;
+using Remora.Discord.Commands.Extensions;
+using Remora.Discord.Commands.Responders;
 using Remora.Discord.Gateway;
 using Remora.Discord.Gateway.Extensions;
 using Remora.Discord.Gateway.Results;
@@ -25,13 +28,18 @@ namespace MURDoX.DiscordAccess
             IConfigurationRoot configuration = new ConfigurationBuilder()
                 .AddJsonFile("appsettings.json", false, true)
                 .Build();
-            
-            ServiceProvider services = new ServiceCollection()
-                .AddDiscordGateway(_ => configuration.GetSection("DiscordToken")["Token"] ?? throw new InvalidOperationException("Token is null"))
+
+            var services = new ServiceCollection()
+                .AddDiscordGateway(_ =>
+                    configuration.GetSection("DiscordToken")["Token"] ??
+                    throw new InvalidOperationException("Token is null"))
+                .AddDiscordCommands()
                 .Configure<DiscordGatewayClientOptions>(g => g.Intents |= GatewayIntents.MessageContents)
                 .AddSingleton<SuggestionService>()
-                .AddSingleton<WelcomeService>()
-                .BuildServiceProvider();
+                .AddSingleton<DiceRollerGameService>()
+                .AddCommandTree()
+                    .WithCommandGroup<DiceRollerCommandGroup>();
+
 
             Console.WriteLine("Connected");
             DiscordGatewayClient gatewayClient = services.GetRequiredService<DiscordGatewayClient>();

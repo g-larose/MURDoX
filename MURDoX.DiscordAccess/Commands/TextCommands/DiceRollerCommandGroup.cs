@@ -30,7 +30,7 @@ public class DiceRollerCommandGroup : CommandGroup
     public async Task<Result> DiceRollAsync(string user, string dice, string sides)
     {
         if (int.TryParse(dice, out var _dice));
-        if (int.TryParse(sides, out int _sides)) ;
+        if (int.TryParse(sides, out int _sides));
         var players = new List<string>();
         players.Add(_context.Message.Author.Value.Username);
         players.Add(user);
