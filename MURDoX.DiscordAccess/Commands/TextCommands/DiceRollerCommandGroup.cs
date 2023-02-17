@@ -27,20 +27,27 @@ public class DiceRollerCommandGroup : CommandGroup
 
     [Command("dicestart")]
     [Description("starts a new dice roller game")]
-    public async Task<Result> DiceRollAsync(string user, string dice, string sides)
+    public async Task<Result> DiceRollAsync(string user, int dice, int sides)
     {
-        if (int.TryParse(dice, out var _dice));
-        if (int.TryParse(sides, out int _sides));
-        var players = new List<string>();
-        players.Add(_context.Message.Author.Value.Username);
-        players.Add(user);
-        DiceRollerResponse response = await _diceGameService.DoRollAsync(new DiceRollerInput
+        try
         {
-            Players = players,
-            Dice = _dice,
-            Sides = _sides,
-        });
-        var result = await _channels.CreateMessageAsync(_context.Message.ChannelID.Value, response.Dice.ToString());
-        return !result.IsSuccess ? Result.FromError(result) : Result.FromSuccess();
+            var players = new List<string>();
+            players.Add(_context.Message.Author.Value.Username);
+            players.Add(user);
+            DiceRollerResponse response = await _diceGameService.DoRollAsync(new DiceRollerInput
+            {
+                Players = players,
+                Dice = dice,
+                Sides = sides,
+            });
+            var result = await _channels.CreateMessageAsync(_context.Message.ChannelID.Value, response.Dice.ToString());
+            return !result.IsSuccess ? Result.FromError(result) : Result.FromSuccess();
+        }
+        catch (Exception ex)
+        {
+            var test = ex.Message;
+        }
+        var result1 = await _channels.CreateMessageAsync(_context.Message.ChannelID.Value, "Something went horribly wrong");
+        return !result1.IsSuccess ? Result.FromError(result1) : Result.FromSuccess();
     }
 }

@@ -29,7 +29,7 @@ namespace MURDoX.DiscordAccess
                 .AddJsonFile("appsettings.json", false, true)
                 .Build();
 
-            var services = new ServiceCollection()
+            var provider = new ServiceCollection()
                 .AddDiscordGateway(_ =>
                     configuration.GetSection("DiscordToken")["Token"] ??
                     throw new InvalidOperationException("Token is null"))
@@ -38,12 +38,13 @@ namespace MURDoX.DiscordAccess
                 .AddSingleton<SuggestionService>()
                 .AddSingleton<DiceRollerGameService>()
                 .AddCommandTree()
-                    .WithCommandGroup<DiceRollerCommandGroup>();
-
+                    .WithCommandGroup<DiceRollerCommandGroup>()
+                .Finish()
+                .BuildServiceProvider();
 
             Console.WriteLine("Connected");
-            DiscordGatewayClient gatewayClient = services.GetRequiredService<DiscordGatewayClient>();
-            ILogger<Program> log = services.GetRequiredService<ILogger<Program>>();
+            DiscordGatewayClient gatewayClient = provider.GetRequiredService<DiscordGatewayClient>();
+            ILogger<Program> log = provider.GetRequiredService<ILogger<Program>>();
 
             Result runResult = await gatewayClient.RunAsync(cancellationSource.Token);
 
