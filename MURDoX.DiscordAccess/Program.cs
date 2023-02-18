@@ -1,6 +1,4 @@
-﻿using MURDoX.DiscordAccess;
-
-namespace MURDoX.DiscordAccess
+﻿namespace MURDoX.DiscordAccess
 {
     internal class Program
     {

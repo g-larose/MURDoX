@@ -1,5 +1,9 @@
+#region
+
 using MURDoX.Core.Data;
 using MURDoX.Core.Models.Utility.SuggestionService;
+
+#endregion
 
 namespace MURDoX.Core.Services
 {
@@ -11,7 +15,7 @@ namespace MURDoX.Core.Services
         {
             _db = db;
         }
-        
+
         public async Task<SuggestionServiceResponse> AddSuggestionAsync(SuggestionServiceInput suggestionServiceInput)
         {
             Suggestion suggestion = new()
@@ -41,7 +45,6 @@ namespace MURDoX.Core.Services
                 Name = suggestion.Name,
                 Description = suggestion.Description
             };
-
         }
     }
 }

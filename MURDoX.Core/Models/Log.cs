@@ -1,12 +1,15 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿#region
+
+using System.ComponentModel.DataAnnotations;
 using MURDoX.Core.Enums;
+
+#endregion
 
 namespace MURDoX.Core.Models
 {
     public class Log
     {
-        [Key]
-        public int Id { get; set; }
+        [Key] public int Id { get; set; }
         public ulong LogId { get; set; }
         public ulong AuthorId { get; set; }
         public string? Title { get; set; }
@@ -14,6 +17,5 @@ namespace MURDoX.Core.Models
         public string? Message { get; set; }
         public LogType Type { get; set; }
         public DateTime Created { get; set; }
-
     }
 }

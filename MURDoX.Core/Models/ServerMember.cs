@@ -1,12 +1,15 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿#region
+
+using System.ComponentModel.DataAnnotations;
 using MURDoX.Core.Enums;
+
+#endregion
 
 namespace MURDoX.Core.Models
 {
     public class ServerMember
     {
-        [Key]
-        public int Id { get; set; }
+        [Key] public int Id { get; set; }
         public ulong DiscordId { get; set; }
         public string Username { get; set; } = "";
         public Rank Rank { get; set; }

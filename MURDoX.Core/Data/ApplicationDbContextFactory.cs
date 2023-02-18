@@ -1,17 +1,23 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿#region
+
+using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Design;
 using Microsoft.Extensions.Configuration;
-using Microsoft.Extensions.Options;
 
-namespace MURDoX.Core.Data;
+#endregion
 
-public class ApplicationDbContextFactory : IDesignTimeDbContextFactory<ApplicationDbContext>
+namespace MURDoX.Core.Data
 {
-    private IConfiguration configuration;
-    public ApplicationDbContext CreateDbContext(string[] args = null)
+    public class ApplicationDbContextFactory : IDesignTimeDbContextFactory<ApplicationDbContext>
     {
-        var options = new DbContextOptionsBuilder<ApplicationDbContext>();
-        options.UseNpgsql(configuration.GetConnectionString("DefaultConnection"));
-        return new ApplicationDbContext(options.Options);
+        private IConfiguration configuration;
+
+        public ApplicationDbContext CreateDbContext(string[] args = null)
+        {
+            DbContextOptionsBuilder<ApplicationDbContext>?
+                options = new();
+            options.UseNpgsql(configuration.GetConnectionString("DefaultConnection"));
+            return new ApplicationDbContext(options.Options);
+        }
     }
 }

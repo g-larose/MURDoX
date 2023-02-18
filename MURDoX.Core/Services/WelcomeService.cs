@@ -1,12 +1,14 @@
-﻿using MURDoX.Core.Models.Utility.WelcomeService;
+﻿#region
+
+using MURDoX.Core.Models.Utility.WelcomeService;
+
+#endregion
 
 namespace MURDoX.Core.Services
 {
     public class WelcomeService
     {
-        Random _rnd = new();
-
-        readonly List<string> _welcomeMsgList = new()
+        private readonly List<string> _welcomeMsgList = new()
         {
             "A very warm welcome to you! It is lovely to have you among us!",
             "It is an honor to have such a hardworking individual like you to join us! Welcome!",
@@ -49,13 +51,16 @@ namespace MURDoX.Core.Services
             "User is here to kick butt and chew bubblegum. And User is all out of gum.",
             "Hello. Is it User you're looking for?",
             "User has joined. Stay a while and listen!",
-            "Roses are red, violets are blue, User joined this server with you",
+            "Roses are red, violets are blue, User joined this server with you"
         };
+
+        private readonly Random _rnd = new();
+
         public Task<WelcomeServiceResponse> GetWelcomeMessage(WelcomeServiceInput input)
         {
             int index = _rnd.Next(_welcomeMsgList.Count);
             string message = _welcomeMsgList[index].Replace("User", input.Username);
-            
+
             return Task.FromResult(new WelcomeServiceResponse
             {
                 Message = message

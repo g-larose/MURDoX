@@ -1,13 +1,13 @@
-## MURDRoX TODO 
+## MURDRoX TODO
 
 * [x] **create random fact sender**
 * [ ] **work on logger system**
 * [ ] **work on MOD commands**
-    * [x] Warn 
+    * [x] Warn
     * [x] Timeout
-    * [ ] Kick 
-    * [ ] Ban 
-    * [ ] Grant Role 
+    * [ ] Kick
+    * [ ] Ban
+    * [ ] Grant Role
     * [x] Purge
 * [ ] **Banking system**
 * [ ] **XP System**

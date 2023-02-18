@@ -1,59 +1,67 @@
-﻿using System.Diagnostics;
+﻿#region
+
 using System.Text;
-using MURDoX.Core.Data;
-using System.Timers;
-using Microsoft.EntityFrameworkCore.Query;
 using MURDoX.Core.Models.Games;
-using Remora.Results;
 
-namespace MURDoX.Core.Services;
+#endregion
 
-public class DiceRollerGameService
+namespace MURDoX.Core.Services
 {
-    public async Task<DiceRollerResponse> DoRollAsync(DiceRollerInput input)
+    public class DiceRollerGameService
     {
-        var response = new DiceRollerResponse();
-        try
+        public async Task<DiceRollerResponse> DoRollAsync(DiceRollerInput input)
         {
-            response = new();
-            Random rnd1 = new();
-            Random rnd2 = new();
-            var playerOneBuilder = new StringBuilder();
-            var playerTwoBuilder = new StringBuilder();
-            input.Players ??= new List<string>
+            DiceRollerResponse? response = new();
+            try
             {
-                "Player 1",
-                "Player 2"
-            };
-            for (int i = 0; i < input.Dice; i++)
+                response = new DiceRollerResponse();
+                Random rnd1 = new();
+                Random rnd2 = new();
+                StringBuilder? playerOneBuilder = new();
+                StringBuilder? playerTwoBuilder = new();
+                input.Players ??= new List<string>
+                {
+                    "Player 1",
+                    "Player 2"
+                };
+                for (int i = 0; i < input.Dice; i++)
+                {
+                    playerOneBuilder.Append(rnd1.Next(1, input.Sides) + " ");
+                    playerTwoBuilder.Append(rnd2.Next(1, input.Sides) + " ");
+                }
+
+                List<int>? pOneResults = playerOneBuilder.ToString().Trim()
+                    .Split(" ", StringSplitOptions.RemoveEmptyEntries).Select(int.Parse).ToList();
+                List<int>? pTwoResults = playerTwoBuilder.ToString().Trim()
+                    .Split(" ", StringSplitOptions.RemoveEmptyEntries).Select(int.Parse).ToList();
+                response.PlayerOneResults.Add(input.Players[0], pOneResults);
+                response.PlayerTwoResults.Add(input.Players[1], pTwoResults);
+                response.Dice = input.Dice;
+                response.Sides = input.Sides;
+                int pOneScore = pOneResults.Sum();
+                int pTwoScore = pTwoResults.Sum();
+
+                if (pOneScore > pTwoScore)
+                {
+                    response.Winner = (input.Players[0], pOneScore);
+                }
+                else if (pTwoScore > pOneScore)
+                {
+                    response.Winner = (input.Players[1], pTwoScore);
+                }
+                else
+                {
+                    response.Winner = ("tie", pOneScore);
+                }
+
+                //TODO: save the results to the db.
+            }
+            catch (Exception ex)
             {
-                playerOneBuilder.Append(rnd1.Next(1, input.Sides) + " ");
-                playerTwoBuilder.Append(rnd2.Next(1, input.Sides) + " ");
+                string? test = ex.Message;
             }
 
-            var pOneResults = playerOneBuilder.ToString().Trim().Split(" ", StringSplitOptions.RemoveEmptyEntries).Select(int.Parse).ToList();
-            var pTwoResults = playerTwoBuilder.ToString().Trim().Split(" ", StringSplitOptions.RemoveEmptyEntries).Select(int.Parse).ToList();
-            response.PlayerOneResults.Add(input.Players[0], pOneResults);
-            response.PlayerTwoResults.Add(input.Players[1], pTwoResults);
-            response.Dice = input.Dice;
-            response.Sides = input.Sides;
-            var pOneScore = pOneResults.Sum();
-            var pTwoScore = pTwoResults.Sum();
-
-            if (pOneScore > pTwoScore)
-                response.Winner = (input.Players[0], pOneScore);
-            else if (pTwoScore > pOneScore)
-                response.Winner = (input.Players[1], pTwoScore);
-            else
-                response.Winner = ("tie", pOneScore);
-
-            //TODO: save the results to the db.
+            return response;
         }
-        catch (Exception ex)
-        {
-            var test = ex.Message;
-        }
-        
-        return response;
     }
 }

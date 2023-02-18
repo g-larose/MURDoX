@@ -2,12 +2,10 @@
 {
     public enum Rank
     {
-
-        NEWBIE ,
-        MEMBER ,
-        REGULAR ,
+        NEWBIE,
+        MEMBER,
+        REGULAR,
         ASSOCIATE,
         MASTER
-
     }
 }

@@ -1,8 +1,12 @@
-﻿using System.Diagnostics;
+﻿#region
+
+using System.Diagnostics;
 using System.Text.RegularExpressions;
 using MURDoX.Core.Data;
 using MURDoX.Core.Models;
 using MURDoX.Core.Models.Utility.SuggestionService;
+
+#endregion
 
 namespace MURDoX.Core.Helpers
 {
@@ -18,46 +22,40 @@ namespace MURDoX.Core.Helpers
         }
 
         #region GENERATE RANDOM NUMBERS
+
         public static int[] MakeRoll(int numDice, int sides)
         {
             int[] numbers = new int[numDice];
             Random rnd = new();
 
-            for (int i = 0; i < numDice; i++)
-            { 
-               
-                numbers[i] =  rnd.Next(1, sides);
-            }
+            for (int i = 0; i < numDice; i++) numbers[i] = rnd.Next(1, sides);
             return numbers;
         }
+
         #endregion
 
         #region TUPLE(INT, LIST<INT>) ROLL
+
         public static (int, List<int>) Roll(int numDice, int sides)
         {
-            List<int> nums = new List<int>();
+            List<int> nums = new();
             (int numDice, List<int> nums) result = (numDice, nums);
             Random rnd = new(Environment.TickCount);
-            for (int i = 0; i < numDice; i++)
-            {
-               result.Item2.Add(rnd.Next(1, sides + 1));
-            }
+            for (int i = 0; i < numDice; i++) result.Item2.Add(rnd.Next(1, sides + 1));
             return result;
         }
 
         #endregion
 
         #region DICTIONARY<INT, LIST<INT>> DOROLL
+
         public static Dictionary<int, List<int>> DoRoll(int numDice, int sides)
         {
             Dictionary<int, List<int>> result = new();
-            List<int> numbers = new List<int>();
+            List<int> numbers = new();
             Random rnd = new();
 
-            for (int i = 0; i < sides; i++)
-            {
-                numbers.Add(rnd.Next(1, sides));
-            }
+            for (int i = 0; i < sides; i++) numbers.Add(rnd.Next(1, sides));
             result.Add(numDice, numbers);
             return result;
         }
@@ -65,19 +63,23 @@ namespace MURDoX.Core.Helpers
         #endregion
 
         #region IS VALID USER
+
         public bool IsValidUser(ulong id)
         {
             ServerMember? user = _db.Users!.Where(x => x.DiscordId == id).FirstOrDefault();
 
             if (user != null)
+            {
                 return true;
+            }
 
             return false;
-            
         }
+
         #endregion
 
         #region CREATE NEW SERVER MEMBER
+
         public async Task CreateNewServerMember(ServerMember member)
         {
             // we are assuming and trusting that a valid ServerMember is being passed in
@@ -86,11 +88,12 @@ namespace MURDoX.Core.Helpers
             await _db.AddAsync(member);
             await _db.SaveChangesAsync();
             Console.WriteLine($"[INFO]  Server Member {member.Username} Created [{DateTimeOffset.UtcNow}]");
-            
         }
+
         #endregion
 
         #region GET DATABASE LATENCY
+
         public int GetDbLatency()
         {
             Stopwatch sw = Stopwatch.StartNew();
@@ -102,16 +105,19 @@ namespace MURDoX.Core.Helpers
         #endregion
 
         #region SAVE SUGGESTION
+
         public void SaveSuggestionToDb(Suggestion suggestion)
         {
             _db.Suggestions!.Add(suggestion);
             _db.SaveChanges();
         }
+
         #endregion
-        
+
         #region SANATIZE
+
         /// <summary>
-        /// Sanatize a string, take out all html that start with '&' and ends with ';'
+        ///     Sanatize a string, take out all html that start with '&' and ends with ';'
         /// </summary>
         /// <param name="content"></param>
         /// <returns>string</returns>
@@ -122,6 +128,7 @@ namespace MURDoX.Core.Helpers
 
             return output;
         }
+
         #endregion
     }
 }

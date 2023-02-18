@@ -1,8 +1,10 @@
-﻿namespace MURDoX.Core.Models;
-
-public class DiscordMember
+﻿namespace MURDoX.Core.Models
 {
-    public ulong Id { get; set; }
-    public string? Username { get; set; }
-    //TODO: we need the other discord member properties from discord api.
+    public class DiscordMember
+    {
+        public ulong Id { get; set; }
+
+        public string? Username { get; set; }
+        //TODO: we need the other discord member properties from discord api.
+    }
 }

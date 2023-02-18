@@ -1,5 +1,9 @@
-﻿using MURDoX.Core.Models;
+﻿#region
+
+using MURDoX.Core.Models;
 using Newtonsoft.Json;
+
+#endregion
 
 namespace MURDoX.Core.Helpers
 {
@@ -9,7 +13,7 @@ namespace MURDoX.Core.Helpers
         {
             string factJson = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Assets", "fact.json");
             Random rnd = new();
-            
+
             string facts = await File.ReadAllTextAsync(factJson);
             List<Fact>? factList = JsonConvert.DeserializeObject<List<Fact>>(facts);
             int index = rnd.Next(0, factList!.Count);
@@ -17,7 +21,6 @@ namespace MURDoX.Core.Helpers
             fact.Content = UtilityHelper.Sanitize(fact.Content);
 
             return fact;
-
         }
     }
 }

@@ -1,20 +1,21 @@
-﻿using System.Reflection;
+﻿#region
+
+using System.Reflection;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using MURDoX.Core.Data;
 using MURDoX.Core.Services;
-using MURDoX.DiscordAccess.Commands.TextCommands;
-using Remora.Commands.Extensions;
 using Remora.Discord.API.Abstractions.Gateway.Commands;
 using Remora.Discord.Commands.Extensions;
-using Remora.Discord.Commands.Responders;
 using Remora.Discord.Extensions.Extensions;
 using Remora.Discord.Gateway;
 using Remora.Discord.Gateway.Extensions;
 using Remora.Discord.Gateway.Results;
 using Remora.Results;
+
+#endregion
 
 namespace MURDoX.DiscordAccess
 {
@@ -28,17 +29,18 @@ namespace MURDoX.DiscordAccess
                 eventArgs.Cancel = true;
                 cancellationSource.Cancel();
             };
-            
+
             IConfigurationRoot configuration = new ConfigurationBuilder()
                 .AddJsonFile("appsettings.json", false, true)
                 .Build();
 
-            var provider = new ServiceCollection()
+            ServiceProvider provider = new ServiceCollection()
                 .AddDiscordGateway(_ =>
                     configuration.GetSection("DiscordToken")["Token"] ??
                     throw new InvalidOperationException("Token is null"))
                 .AddDiscordCommands(true)
-                .AddDbContext<ApplicationDbContext>(o => o.UseNpgsql(configuration.GetConnectionString("DefaultConnection")))
+                .AddDbContext<ApplicationDbContext>(o =>
+                    o.UseNpgsql(configuration.GetConnectionString("DefaultConnection")))
                 .AddCommandGroupsFromAssembly(Assembly.GetExecutingAssembly())
                 .Configure<DiscordGatewayClientOptions>(g => g.Intents |= GatewayIntents.MessageContents)
                 .Configure<DiscordGatewayClientOptions>(g => g.Intents |= GatewayIntents.Guilds)
@@ -47,7 +49,7 @@ namespace MURDoX.DiscordAccess
                 .BuildServiceProvider();
 
             Console.WriteLine("Connected");
-           
+
             DiscordGatewayClient gatewayClient = provider.GetRequiredService<DiscordGatewayClient>();
             ILogger<Program> log = provider.GetRequiredService<ILogger<Program>>();
 
