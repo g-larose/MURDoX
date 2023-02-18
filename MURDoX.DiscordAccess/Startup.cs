@@ -46,6 +46,7 @@ namespace MURDoX.DiscordAccess
                 .Configure<DiscordGatewayClientOptions>(g => g.Intents |= GatewayIntents.Guilds)
                 .AddSingleton<SuggestionService>()
                 .AddSingleton<DiceRollerGameService>()
+                .AddSingleton<EconomyGameService>()
                 .BuildServiceProvider();
 
             Console.WriteLine("Connected");
