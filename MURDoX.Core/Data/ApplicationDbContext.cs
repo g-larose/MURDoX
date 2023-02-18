@@ -12,16 +12,19 @@ namespace MURDoX.Core.Data
         public DbSet<Suggestion>? Suggestions { get; set; }
         public DbSet<ServerMember>? Users { get; set; }
         public DbSet<Reminder>? Reminders { get; set; }
-
+        
         public ApplicationDbContext(DbContextOptions options) : base(options)
         {
             //Database.Migrate();
+            
         }
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
+            
             base.OnConfiguring(optionsBuilder);
- 
+            
+            
         }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)

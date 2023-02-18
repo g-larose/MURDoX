@@ -1,7 +1,9 @@
 ﻿using System.Reflection;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
+using MURDoX.Core.Data;
 using MURDoX.Core.Services;
 using MURDoX.DiscordAccess.Commands.TextCommands;
 using Remora.Commands.Extensions;
@@ -36,8 +38,10 @@ namespace MURDoX.DiscordAccess
                     configuration.GetSection("DiscordToken")["Token"] ??
                     throw new InvalidOperationException("Token is null"))
                 .AddDiscordCommands(true)
+                .AddDbContext<ApplicationDbContext>(o => o.UseNpgsql(configuration.GetConnectionString("DefaultConnection")))
                 .AddCommandGroupsFromAssembly(Assembly.GetExecutingAssembly())
                 .Configure<DiscordGatewayClientOptions>(g => g.Intents |= GatewayIntents.MessageContents)
+                .Configure<DiscordGatewayClientOptions>(g => g.Intents |= GatewayIntents.Guilds)
                 .AddSingleton<SuggestionService>()
                 .AddSingleton<DiceRollerGameService>()
                 .BuildServiceProvider();
