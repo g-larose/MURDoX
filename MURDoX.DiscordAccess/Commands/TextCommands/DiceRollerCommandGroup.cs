@@ -9,6 +9,7 @@ using Remora.Discord.API.Abstractions.Objects;
 using Remora.Discord.API.Abstractions.Rest;
 using Remora.Discord.API.Objects;
 using Remora.Discord.Commands.Contexts;
+using Remora.Rest.Core;
 using Remora.Results;
 
 namespace MURDoX.DiscordAccess.Commands.TextCommands;
@@ -39,7 +40,7 @@ public class DiceRollerCommandGroup : CommandGroup
         };
         DiceRollerResponse response = await _diceGameService.DoRollAsync(new DiceRollerInput { Players = players, Dice = dice, Sides = sides });
 
-        var fields = new EmbedField[6];
+        var fields = new EmbedField[8];
         var playerOneDiceResults = response.PlayerOneResults;
         var playerTwoDiceResults = response.PlayerTwoResults;
         var pOneDice = new StringBuilder();
@@ -73,10 +74,13 @@ public class DiceRollerCommandGroup : CommandGroup
         fields[3] = new("Player", players[1], true);
         fields[4] = new("Results", pTwoDice.ToString(), true);
         fields[5] = new("Dice", $"{response.Dice}", true);
+        fields[6] = new("Winner", $"{response.Winner.Item1}", true);
+        fields[7] = new("Score", $"{response.Winner.Item2}", true);
         var embed = new Embed()
         {
             Title = $"Results for Game {players[0]} vs {players[1]}",
-            Fields = fields
+            Fields = fields,
+            Timestamp = DateTimeOffset.UtcNow,
         };
         Result<IMessage> result = await _channels.CreateMessageAsync(_context.Message.ChannelID.Value, embeds: new[] { embed });
         return !result.IsSuccess ? Result.FromError(result) : Result.FromSuccess();

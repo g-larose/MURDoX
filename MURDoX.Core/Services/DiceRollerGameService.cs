@@ -37,6 +37,17 @@ public class DiceRollerGameService
             response.PlayerTwoResults.Add(input.Players[1], pTwoResults);
             response.Dice = input.Dice;
             response.Sides = input.Sides;
+            var pOneScore = pOneResults.Sum();
+            var pTwoScore = pTwoResults.Sum();
+
+            if (pOneScore > pTwoScore)
+                response.Winner = (input.Players[0], pOneScore);
+            else if (pTwoScore > pOneScore)
+                response.Winner = (input.Players[1], pTwoScore);
+            else
+                response.Winner = ("tie", pOneScore);
+
+            //TODO: save the results to the db.
         }
         catch (Exception ex)
         {

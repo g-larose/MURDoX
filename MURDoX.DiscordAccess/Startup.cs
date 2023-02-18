@@ -35,7 +35,7 @@ namespace MURDoX.DiscordAccess
                 .AddDiscordGateway(_ =>
                     configuration.GetSection("DiscordToken")["Token"] ??
                     throw new InvalidOperationException("Token is null"))
-                .AddDiscordCommands()
+                .AddDiscordCommands(true)
                 .AddCommandGroupsFromAssembly(Assembly.GetExecutingAssembly())
                 .Configure<DiscordGatewayClientOptions>(g => g.Intents |= GatewayIntents.MessageContents)
                 .AddSingleton<SuggestionService>()
@@ -43,6 +43,7 @@ namespace MURDoX.DiscordAccess
                 .BuildServiceProvider();
 
             Console.WriteLine("Connected");
+           
             DiscordGatewayClient gatewayClient = provider.GetRequiredService<DiscordGatewayClient>();
             ILogger<Program> log = provider.GetRequiredService<ILogger<Program>>();
 
