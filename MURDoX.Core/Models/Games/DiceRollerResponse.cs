@@ -2,7 +2,8 @@
 
 public class DiceRollerResponse
 {
-    public List<(string, int)>? DiceResults { get; set; }
+    public Dictionary<string, List<int>>? PlayerOneResults { get; set; } = new();
+    public Dictionary<string, List<int>>? PlayerTwoResults { get; set; } = new();
     public int Sides { get; set; }
     public int Dice { get; set; }
 }

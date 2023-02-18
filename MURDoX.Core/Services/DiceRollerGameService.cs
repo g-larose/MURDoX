@@ -1,4 +1,5 @@
 ﻿using System.Diagnostics;
+using System.Text;
 using MURDoX.Core.Data;
 using System.Timers;
 using Microsoft.EntityFrameworkCore.Query;
@@ -9,27 +10,39 @@ namespace MURDoX.Core.Services;
 
 public class DiceRollerGameService
 {
-    private readonly ApplicationDbContext _db;
-    private DiceRollerInput _input;
-    public DiceRollerGameService(ApplicationDbContext db)
-    {
-        _db = db;
-    }
     public async Task<DiceRollerResponse> DoRollAsync(DiceRollerInput input)
     {
-        _input = input;
-        DiceRollerResponse response = new DiceRollerResponse();
-        var rnd = new Random();
-        
-        for (int i = 0; i < input.Dice; i++)
+        var response = new DiceRollerResponse();
+        try
         {
-            response.DiceResults.Add(new ValueTuple<string, int>(input.Players[0], rnd.Next(1, input.Sides)));
-            response.DiceResults.Add(new ValueTuple<string, int>(input.Players[1], rnd.Next(1, input.Sides)));
+            response = new();
+            Random rnd1 = new();
+            Random rnd2 = new();
+            var playerOneBuilder = new StringBuilder();
+            var playerTwoBuilder = new StringBuilder();
+            input.Players ??= new List<string>
+            {
+                "Player 1",
+                "Player 2"
+            };
+            for (int i = 0; i < input.Dice; i++)
+            {
+                playerOneBuilder.Append(rnd1.Next(1, input.Sides) + " ");
+                playerTwoBuilder.Append(rnd2.Next(1, input.Sides) + " ");
+            }
+
+            var pOneResults = playerOneBuilder.ToString().Trim().Split(" ", StringSplitOptions.RemoveEmptyEntries).Select(int.Parse).ToList();
+            var pTwoResults = playerTwoBuilder.ToString().Trim().Split(" ", StringSplitOptions.RemoveEmptyEntries).Select(int.Parse).ToList();
+            response.PlayerOneResults.Add(input.Players[0], pOneResults);
+            response.PlayerTwoResults.Add(input.Players[1], pTwoResults);
+            response.Dice = input.Dice;
+            response.Sides = input.Sides;
         }
-
-        response.Dice = input.Dice;
-        response.Sides = input.Sides;
-
+        catch (Exception ex)
+        {
+            var test = ex.Message;
+        }
+        
         return response;
     }
 }

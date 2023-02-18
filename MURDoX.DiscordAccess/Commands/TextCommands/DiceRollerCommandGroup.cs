@@ -1,10 +1,13 @@
 ﻿using System.ComponentModel;
+using System.Text;
 using MURDoX.Core.Models;
 using MURDoX.Core.Models.Games;
 using MURDoX.Core.Services;
 using Remora.Commands.Attributes;
 using Remora.Commands.Groups;
+using Remora.Discord.API.Abstractions.Objects;
 using Remora.Discord.API.Abstractions.Rest;
+using Remora.Discord.API.Objects;
 using Remora.Discord.Commands.Contexts;
 using Remora.Results;
 
@@ -29,25 +32,54 @@ public class DiceRollerCommandGroup : CommandGroup
     [Description("starts a new dice roller game")]
     public async Task<Result> DiceRollAsync(string user, int dice, int sides)
     {
-        try
+        List<string> players = new()
         {
-            var players = new List<string>();
-            players.Add(_context.Message.Author.Value.Username);
-            players.Add(user);
-            DiceRollerResponse response = await _diceGameService.DoRollAsync(new DiceRollerInput
+            _context.Message.Author.Value.Username,
+            user
+        };
+        DiceRollerResponse response = await _diceGameService.DoRollAsync(new DiceRollerInput { Players = players, Dice = dice, Sides = sides });
+
+        var fields = new EmbedField[6];
+        var playerOneDiceResults = response.PlayerOneResults;
+        var playerTwoDiceResults = response.PlayerTwoResults;
+        var pOneDice = new StringBuilder();
+        var pTwoDice = new StringBuilder();
+        foreach (KeyValuePair<string, List<int>> d in playerOneDiceResults)
+        {
+            for (int i = 0; i < d.Value.Count; i++)
             {
-                Players = players,
-                Dice = dice,
-                Sides = sides,
-            });
-            var result = await _channels.CreateMessageAsync(_context.Message.ChannelID.Value, response.Dice.ToString());
-            return !result.IsSuccess ? Result.FromError(result) : Result.FromSuccess();
+                if (i < 5)
+                    pOneDice.Append(d.Value[i] + ",");
+                else
+                    pOneDice.Append(d.Value[i]);
+
+            }
         }
-        catch (Exception ex)
+        foreach (KeyValuePair<string, List<int>> d in playerTwoDiceResults)
         {
-            var test = ex.Message;
+            for (int i = 0; i < d.Value.Count; i++)
+            {
+                if (i < 5)
+                    pTwoDice.Append(d.Value[i] + ",");
+                else
+                    pTwoDice.Append(d.Value[i]);
+
+            }
         }
-        var result1 = await _channels.CreateMessageAsync(_context.Message.ChannelID.Value, "Something went horribly wrong");
-        return !result1.IsSuccess ? Result.FromError(result1) : Result.FromSuccess();
+
+        fields[0] = new("Player", players[0], true);
+        fields[1] = new("Results", pOneDice.ToString(), true);
+        fields[2] = new("Dice", $"{response.Dice}", true);
+        fields[3] = new("Player", players[1], true);
+        fields[4] = new("Results", pTwoDice.ToString(), true);
+        fields[5] = new("Dice", $"{response.Dice}", true);
+        var embed = new Embed()
+        {
+            Title = $"Results for Game {players[0]} vs {players[1]}",
+            Fields = fields
+        };
+        Result<IMessage> result = await _channels.CreateMessageAsync(_context.Message.ChannelID.Value, embeds: new[] { embed });
+        return !result.IsSuccess ? Result.FromError(result) : Result.FromSuccess();
     }
 }
+// there we go dice service was at fault as i said
