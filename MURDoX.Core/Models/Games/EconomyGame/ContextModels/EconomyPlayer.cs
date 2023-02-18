@@ -2,7 +2,7 @@ using System.ComponentModel.DataAnnotations;
 
 namespace MURDoX.Core.Models.Games.EconomyGame.ContextModels
 {
-    public class EconomyPlayers
+    public class EconomyPlayer
     {
         [Key]
         public Guid Id { get; set; }

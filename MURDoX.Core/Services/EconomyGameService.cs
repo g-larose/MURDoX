@@ -103,7 +103,7 @@ namespace MURDoX.Core.Services
         {
             EconomySettings settings = _dbContext.EconomySettings.FirstOrDefault()!;
             string planetName = GetPlanetName(input.PlayerName);
-            EconomyPlayers player = new()
+            EconomyPlayer player = new()
             {
                 UserId = input.UserId,
                 Money = settings.MoneySet,
@@ -114,7 +114,7 @@ namespace MURDoX.Core.Services
             };
             await _dbContext.EconomyPlayers.AddAsync(player);
             await _dbContext.SaveChangesAsync();
-            EconomyPlayers newPlayer = _dbContext.EconomyPlayers.FirstOrDefault(x => x.UserId == input.UserId)!;
+            EconomyPlayer newPlayer = _dbContext.EconomyPlayers.FirstOrDefault(x => x.UserId == input.UserId)!;
             return new EconomyNewPlayerResponse
             {
                 Message = "Player created successfully.",

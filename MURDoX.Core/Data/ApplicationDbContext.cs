@@ -25,7 +25,7 @@ namespace MURDoX.Core.Data
         
         // Economy
         public DbSet<EconomyPlanet> EconomyPlanets { get; set; }
-        public DbSet<EconomyPlayers> EconomyPlayers { get; set; }
+        public DbSet<EconomyPlayer> EconomyPlayers { get; set; }
         public DbSet<EconomySettings> EconomySettings { get; set; }
         // Economy - End
         public override DatabaseFacade Database => base.Database;
