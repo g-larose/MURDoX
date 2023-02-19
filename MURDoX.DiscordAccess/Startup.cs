@@ -39,8 +39,8 @@ namespace MURDoX.DiscordAccess
                     configuration.GetSection("DiscordToken")["Token"] ??
                     throw new InvalidOperationException("Token is null"))
                 .AddDiscordCommands(true)
-                .AddDbContext<ApplicationDbContext>(o =>
-                    o.UseNpgsql(configuration.GetConnectionString("DefaultConnection")))
+                .AddDbContext<ApplicationDbContext>()
+                .AddSingleton<ApplicationDbContextFactory>()
                 .AddCommandGroupsFromAssembly(Assembly.GetExecutingAssembly())
                 .Configure<DiscordGatewayClientOptions>(g => g.Intents |= GatewayIntents.MessageContents)
                 .Configure<DiscordGatewayClientOptions>(g => g.Intents |= GatewayIntents.Guilds)
