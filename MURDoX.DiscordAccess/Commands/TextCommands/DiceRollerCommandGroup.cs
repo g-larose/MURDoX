@@ -2,6 +2,7 @@
 
 using System.ComponentModel;
 using System.Text;
+using MURDoX.Core.Extensions;
 using MURDoX.Core.Models.Games;
 using MURDoX.Core.Services;
 using Remora.Commands.Attributes;
@@ -34,12 +35,12 @@ namespace MURDoX.DiscordAccess.Commands.TextCommands
 
         [Command("dicestart")]
         [Description("starts a new dice roller game")]
-        public async Task<Result> DiceRollAsync(string user, int dice, int sides)
+        public async Task<Result> DiceRollAsync(IUser user, int dice, int sides)
         {
             List<string> players = new()
             {
                 _context.Message.Author.Value.Username,
-                user
+                user.Username
             };
             DiceRollerResponse response = await _diceGameService.DoRollAsync(new DiceRollerInput
                 { Players = players, Dice = dice, Sides = sides });
@@ -71,11 +72,13 @@ namespace MURDoX.DiscordAccess.Commands.TextCommands
                         pTwoDice.Append(d.Value[i]);
                     }
 
+            var playerOneSum = playerOneDiceResults.SumOf();
+            var playerTwoSum = playerTwoDiceResults.SumOf();
             fields[0] = new EmbedField("Player", players[0], true);
-            fields[1] = new EmbedField("Results", pOneDice.ToString(), true);
+            fields[1] = new EmbedField("Results", $"{pOneDice.ToString()} **[{playerOneSum}]**", true);
             fields[2] = new EmbedField("Dice", $"{response.Dice}", true);
             fields[3] = new EmbedField("Player", players[1], true);
-            fields[4] = new EmbedField("Results", pTwoDice.ToString(), true);
+            fields[4] = new EmbedField("Results", $"{pTwoDice.ToString()} **[{playerTwoSum}]**", true);
             fields[5] = new EmbedField("Dice", $"{response.Dice}", true);
             fields[6] = new EmbedField("Winner", $"{response.Winner.Item1}", true);
             fields[7] = new EmbedField("Score", $"{response.Winner.Item2}", true);

@@ -2,6 +2,7 @@
 
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.Extensions.Configuration;
 using MURDoX.Core.Models;
 using MURDoX.Core.Models.Games.EconomyGame.ContextModels;
 using MURDoX.Core.Models.Utility.SuggestionService;
@@ -12,9 +13,11 @@ namespace MURDoX.Core.Data
 {
     public class ApplicationDbContext : DbContext
     {
+        private readonly IConfiguration _configuration;
         public ApplicationDbContext(DbContextOptions options) : base(options)
         {
             //Database.Migrate();
+            
         }
 
         public DbSet<Log>? Logs { get; set; }
@@ -33,6 +36,7 @@ namespace MURDoX.Core.Data
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
             base.OnConfiguring(optionsBuilder);
+            optionsBuilder.UseNpgsql(_configuration.GetConnectionString("DefaultConnection"));
         }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
