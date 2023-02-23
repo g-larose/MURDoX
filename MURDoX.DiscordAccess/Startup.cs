@@ -54,6 +54,7 @@ namespace MURDoX.DiscordAccess
                 .AddSingleton<SuggestionService>()
                 .AddSingleton<DiceRollerGameService>()
                 .AddSingleton<EconomyGameService>()
+                .AddDiscordCommands()
                 .BuildServiceProvider();
 
             // print the name of all assemblies that are loaded
