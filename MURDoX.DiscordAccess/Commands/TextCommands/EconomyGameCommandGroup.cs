@@ -43,7 +43,7 @@ namespace MURDoX.DiscordAccess.Commands.TextCommands
         
         [Command("economy setup money")]
         [Description("sets up the economy game")]
-        public async Task EconomySetupMoneyAsync(int money)
+        public async Task<Result> EconomySetupMoneyAsync(int money)
         {
             EconomySetupMoneyResponse response = await _economyGameService.SetupMoney(new EconomySetupMoneyInput
             {
@@ -54,12 +54,13 @@ namespace MURDoX.DiscordAccess.Commands.TextCommands
                 new("Money After", response.MoneyAfter.ToString()),
             };
             Embed embed = new(Title:"Economy Setup Money", Description:response.Message, Fields: fields);
-            await _channels.CreateMessageAsync(_context.Message.ChannelID.Value, embeds: new []{embed});
+            Result<IMessage> result = await _channels.CreateMessageAsync(_context.Message.ChannelID.Value, embeds: new []{embed});
+            return result.IsSuccess ? Result.FromSuccess() : Result.FromError(result.Error);
         }
         
         [Command("economy setup resource")]
         [Description("sets up the economy game")]
-        public async Task EconomySetupResourceAsync(int starstone, int chromotite, int zoridium)
+        public async Task<Result> EconomySetupResourceAsync(int starstone, int chromotite, int zoridium)
         {
             EconomySetupResourceResponse response = await _economyGameService.SetupResources(new EconomySetupResourceInput
             {
@@ -76,12 +77,13 @@ namespace MURDoX.DiscordAccess.Commands.TextCommands
                 new("Zoridium After", response.ZoridiumAfter.ToString()),
             };
             Embed embed = new(Title:"Economy Setup Resources", Description:response.Message, Fields: fields);
-            await _channels.CreateMessageAsync(_context.Message.ChannelID.Value, embeds: new []{embed});
+            Result<IMessage> result = await _channels.CreateMessageAsync(_context.Message.ChannelID.Value, embeds: new []{embed});
+            return result.IsSuccess ? Result.FromSuccess() : Result.FromError(result.Error);
         }
         
         [Command("economy setup shop")]
         [Description("sets up the economy game")]
-        public async Task EconomySetupShopAsync(float multiplier)
+        public async Task<Result> EconomySetupShopAsync(float multiplier)
         {
             EconomySetupShopResponse response = await _economyGameService.SetupShop(new EconomySetupShopInput
             {
@@ -92,12 +94,14 @@ namespace MURDoX.DiscordAccess.Commands.TextCommands
                 new("Multiplier After", response.ShopEffectMultiplierAfter.ToString(CultureInfo.InvariantCulture)),
             };
             Embed embed = new(Title:"Economy Setup Shop", Description:response.Message, Fields: fields);
-            await _channels.CreateMessageAsync(_context.Message.ChannelID.Value, embeds: new []{embed});
+            Result<IMessage> result = await _channels.CreateMessageAsync(_context.Message.ChannelID.Value, embeds: new []{embed});
+            return result.IsSuccess ? Result.FromSuccess() : Result.FromError(result.Error);
+            
         }
         
         [Command("economy join")]
         [Description("joins the economy game")]
-        public async Task EconomyJoinAsync()
+        public async Task<Result> EconomyJoinAsync()
         {
             EconomyNewPlayerResponse response = await _economyGameService.NewPlayer(new EconomyNewPlayerInput
             {
@@ -112,7 +116,8 @@ namespace MURDoX.DiscordAccess.Commands.TextCommands
                 new("Planet Id", response.PlanetId.ToString()),
             };
             Embed embed = new(Title:"Economy Join", Description:response.Message, Fields: fields);
-            await _channels.CreateMessageAsync(_context.Message.ChannelID.Value, embeds: new []{embed});
+            Result<IMessage> result = await _channels.CreateMessageAsync(_context.Message.ChannelID.Value, embeds: new []{embed});
+            return result.IsSuccess ? Result.FromSuccess() : Result.FromError(result.Error);
         }
     }
 }

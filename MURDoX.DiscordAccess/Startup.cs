@@ -7,6 +7,8 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using MURDoX.Core.Data;
 using MURDoX.Core.Services;
+using MURDoX.DiscordAccess.Commands.TextCommands;
+using Remora.Commands.Extensions;
 using Remora.Discord.API.Abstractions.Gateway.Commands;
 using Remora.Discord.Commands.Extensions;
 using Remora.Discord.Extensions.Extensions;
@@ -38,17 +40,27 @@ namespace MURDoX.DiscordAccess
                 .AddDiscordGateway(_ =>
                     configuration.GetSection("DiscordToken")["Token"] ??
                     throw new InvalidOperationException("Token is null"))
-                .AddDiscordCommands(true)
                 .AddDbContext<ApplicationDbContext>()
-                .AddSingleton<ApplicationDbContextFactory>()
-                .AddCommandGroupsFromAssembly(Assembly.GetExecutingAssembly())
-                .Configure<DiscordGatewayClientOptions>(g => g.Intents |= GatewayIntents.MessageContents)
-                .Configure<DiscordGatewayClientOptions>(g => g.Intents |= GatewayIntents.Guilds)
+                .AddSingleton<ApplicationDbContextFactory>() 
+                //.AddCommandGroupsFromAssembly(Assembly.GetExecutingAssembly())
+                .AddCommandTree().WithCommandGroup<PingPongTest>().Finish()
+                .AddCommandTree().WithCommandGroup<UtilityCommandGroup>().Finish()
+                .AddCommandTree().WithCommandGroup<EconomyGameCommandGroup>().Finish()
+                .AddCommandTree().WithCommandGroup<DiceRollerCommandGroup>().Finish()
+                .Configure<DiscordGatewayClientOptions>(options =>
+                {
+                    options.Intents |= GatewayIntents.MessageContents;
+                })
                 .AddSingleton<SuggestionService>()
                 .AddSingleton<DiceRollerGameService>()
                 .AddSingleton<EconomyGameService>()
                 .BuildServiceProvider();
 
+            // print the name of all assemblies that are loaded
+            foreach (Assembly assembly in AppDomain.CurrentDomain.GetAssemblies())
+            {
+                Console.WriteLine(assembly.FullName);
+            }
             Console.WriteLine("Connected");
 
             DiscordGatewayClient gatewayClient = provider.GetRequiredService<DiscordGatewayClient>();
