@@ -94,4 +94,3 @@ namespace MURDoX.DiscordAccess.Commands.TextCommands
         }
     }
 }
-// there we go dice service was at fault as i said

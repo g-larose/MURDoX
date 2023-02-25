@@ -1,5 +1,6 @@
 #region
 
+using System.ComponentModel;
 using System.Drawing;
 using MURDoX.Core.Models.Utility.SuggestionService;
 using MURDoX.Core.Services;
@@ -77,6 +78,14 @@ namespace MURDoX.DiscordAccess.Commands.TextCommands
                     await _channels.CreateMessageAsync(_context.Message.ChannelID.Value, embeds: embeds);
                 return !result.IsSuccess ? Result.FromError(result) : Result.FromSuccess();
             }
+        }
+
+        [Command("ping")]
+        [Description("returns the speed of the Discord Api, Message Api and the Database Api response time")]
+        public async Task<Result> PingAsync()
+        {
+            Result<IMessage> result = await _channels.CreateMessageAsync(_context.Message.ChannelID.Value, "Pong");
+            return !result.IsSuccess ? Result.FromError(result) : Result.FromSuccess();
         }
     }
 }
